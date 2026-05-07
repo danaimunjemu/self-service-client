@@ -1,0 +1,127 @@
+<div class="mt-5">
+  <div class="form-container">
+    <div class="container">
+      <div class="form shadow-sm p-4 bg-white rounded">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <h3 class="mb-0 text-dark font-weight-bold">POS MACHINE REQUEST</h3>
+          <div class="">
+          <afc-button
+            nz-tooltip
+            nzTooltipTitle="Cancel Application"
+            nz-popconfirm
+            nzPopconfirmTitle="Are you sure you want to cancel and exit the process?"
+            nzPopconfirmPlacement="bottom"
+            (nzOnConfirm)="openLeavePageModal()"
+            (click)="cancel()"
+            [label]="'Cancel'"
+            [loading]="false"
+            [style]="'exit'"
+            [size]="'sm'"
+          />
+          </div>
+        </div>
+
+        <hr />
+
+        <div class="row">
+          <div class="col-md-4 mb-3">
+            <label class="d-block font-weight-bold">National ID Number <span class="text-danger">*</span></label>
+            <input nz-input placeholder="e.g. 631497524M60"
+                   [(ngModel)]="createAccountForm.personalInformation.pidNumber"
+                   (ngModelChange)="formatIdNumber($event)")
+            />
+          </div>
+          <div class="col-md-4 mb-3">
+            <label class="d-block font-weight-bold">First Name <span class="text-danger">*</span></label>
+            <input nz-input placeholder="First Name" [(ngModel)]="createAccountForm.personalInformation.firstName" />
+          </div>
+          <div class="col-md-4 mb-3">
+            <label class="d-block font-weight-bold">Last Name <span class="text-danger">*</span></label>
+            <input nz-input placeholder="Last Name" [(ngModel)]="createAccountForm.personalInformation.lastName" />
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-4 mb-3">
+            <label class="d-block font-weight-bold">Phone Number <span class="text-danger">*</span></label>
+            <input nz-input placeholder="e.g. 263771234567" [(ngModel)]="createAccountForm.personalInformation.phone" />
+          </div>
+          <div class="col-md-4 mb-3">
+            <label class="d-block font-weight-bold">Email Address <span class="text-danger">*</span></label>
+            <input nz-input type="email" placeholder="user@gmail.com" [(ngModel)]="createAccountForm.personalInformation.emailId" />
+          </div>
+          <div class="col-md-4 mb-3">
+            <label class="d-block font-weight-bold">Shop License Upload <span class="text-danger">*</span></label>
+            <nz-upload
+              nzType="drag"
+              [nzMultiple]="false"
+              [(nzFileList)]="otherFileList"
+              [nzBeforeUpload]="checkOtherUploadFile"
+            >
+              <p class="ant-upload-drag-icon">
+                <span nz-icon nzType="file-protect" style="font-size: 32px; color: #1890ff;"></span>
+              </p>
+              <p class="ant-upload-text">Click or drag Shop License here</p>
+            </nz-upload>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-4 mb-3">
+            <label class="d-block font-weight-bold">Preferred Branch <span class="text-danger">*</span></label>
+            <nz-select nzPlaceHolder="Select Branch" nzSize="default" [(ngModel)]="createAccountForm.personalInformation.branch" class="w-100">
+              <nz-option *ngFor="let option of idcBranches" [nzLabel]="option.name" [nzValue]="option.code"></nz-option>
+            </nz-select>
+          </div>
+          <div class="col-md-4 mb-3">
+            <label class="d-block font-weight-bold">Business Category(MCC)<span class="text-danger">*</span></label>
+            <nz-select nzPlaceHolder="Select MCC" nzSize="default" [(ngModel)]="createAccountForm.personalInformation.mcc" class="w-100">
+              <nz-option *ngFor="let option of posMcc" [nzValue]="option" [nzLabel]="option.name" ></nz-option>
+<!--              [nzValue]="option.code"-->
+            </nz-select>
+          </div>
+          <div class="col-md-4 mb-3">
+            <label class="d-block font-weight-bold">Account Number<span class="text-danger">*</span></label>
+            <input nz-input placeholder="Enter Account Number" [(ngModel)]="createAccountForm.personalInformation.accountNumber" />
+          </div>
+          <div class="col-md-4"></div>
+        </div>
+
+        <div class="mt-4 d-flex justify-content-end">
+          <button nz-button
+                  nzType="primary"
+                  nzSize="large"
+                  class="px-5"
+                  [nzLoading]="createAccountLoader"
+                  [disabled]="!createAccountForm.personalInformation.pidNumber || otherFileList.length === 0"
+                  (click)="done()">
+            Submit Application
+          </button>
+        </div>
+
+        <nz-modal
+          [(nzVisible)]="isDoneVisible"
+          [nzTitle]="modalDoneTitle"
+          [nzContent]="modalDoneContent"
+          [nzFooter]="modalDoneFooter"
+          (nzOnCancel)="handleDoneCancel()"
+        >
+          <ng-template #modalDoneTitle></ng-template>
+
+          <ng-template #modalDoneContent>
+            <div style="text-align: center">
+              Your application has been submitted for processing. <br />
+              Your ticket number is:
+              <br />
+              <span style="font-size: 20px">{{savedTicketNumber}}</span>
+              <p>Your application has been processed. </p>
+            </div>
+          </ng-template>
+
+          <ng-template #modalDoneFooter> </ng-template>
+        </nz-modal>
+
+      </div>
+    </div>
+  </div>
+</div>

@@ -11,6 +11,6 @@ export class AppComponent {
   constructor(
     private consoleToggleService: ConsoleToggleService
   ) {
-    this.consoleToggleService.disableConsoleInProduction();
+    //this.consoleToggleService.disableConsoleInProduction();
   }
 }

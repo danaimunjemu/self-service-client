@@ -51,7 +51,7 @@ export class AccountOpeningComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.getBranches();
+    this.getBranches()
     this.subs.add = this.accountOpeningService.queryRegistrarResponse$.subscribe((res: any) => {
       this.onQueryRegistrarResponse(res);
     });

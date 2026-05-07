@@ -57,6 +57,16 @@
 <!--                [size]="'sm'"-->
 <!--              />-->
             <afc-button
+              class="me-2"
+              [label]="'New Pos Request'"
+              [disableButton]="false"
+              [loading]="false"
+              (buttonClick)="navigateTo('posman-merchant-onboarding')"
+              [style]="'primary'"
+              [size]="'sm'"
+            />
+
+            <afc-button
               [label]="'Open New Account'"
               [disableButton]="false"
               [loading]="false"

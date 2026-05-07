@@ -393,6 +393,23 @@
               </div>
             </div>
           }
+          @if (queryTicket.ticket.service == 'posman') {
+            <nz-list nzBordered>
+              <nz-list-item>
+                <span nz-typography>SERVICE</span>
+                {{queryTicket.ticket.service}}
+              </nz-list-item>
+              <nz-list-item>
+                <span nz-typography>MESSAGE</span>
+                {{queryTicket.ticket.message}}
+              </nz-list-item>
+
+              <nz-list-item>
+                <span nz-typography>STATUS</span>
+                <nz-tag nzColor="yellow" [nzBordered]="false">{{queryTicket.ticket.status}}</nz-tag>
+              </nz-list-item>
+            </nz-list>
+          }
 
         </div>
 
