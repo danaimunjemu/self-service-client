@@ -15,11 +15,24 @@ export class SelfServiceLayoutComponent {
 
   @HostListener('window:scroll', [])
   onWindowScroll(): void {
+    // @ts-ignore
     const scrollTop = window.scrollY || document.documentElement.scrollTop;
     this.isScrolled = scrollTop > 50; // Change to your desired scroll threshold
   }
 
   navigateTo(page: string) {
     this.routingService.navigateByUrl('self-service/' + page);
+    this.handleLoansCancel();
+  }
+
+
+  isLoansVisible = false;
+
+  showLoansModal(): void {
+    this.isLoansVisible = true;
+  }
+
+  handleLoansCancel(): void {
+    this.isLoansVisible = false;
   }
 }

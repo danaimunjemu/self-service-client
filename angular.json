@@ -72,12 +72,15 @@
               ],
               "outputHashing": "all",
               "define": {
-                "SELF_SERVICE_URL": "\"https://orbit-live.afcholdings.co.zw:7000/self-service/\"",
+                "SELF_SERVICE_URL": "\"https://selfservice.afcholdings.co.zw/api/gateway/self-service/\"",
+                "CDN_SERVICE_URL": "\"https://selfservice.afcholdings.co.zw/api/gateway/\"",
                 "MOBILE_BANKING_SERVICE_URL": "\"http://192.168.0.249:8090/\"",
                 "OUTPOST_URL": "\"https://192.168.1.106:8075/api/outpost/\"",
-                "ACC_ENQ_URL": "\"http://192.168.0.249:8110/txn-banking/txn-agency-banking/tran-request/\"",
+                "ACC_ENQ_URL": "\"https://selfservice.afcholdings.co.zw/api/gateway/ate/txn-banking/txn-agency-banking/tran-request/\"",
                 "SECRET_KEY": "Xp4JvLq5Hs8Yt7ZaWd2MiQn9Fg0RsXCE",
-                "ACC_API_KEY": "'zimra:ed15c376-20d8-4642-9c2c-3ae742ba7572'"
+                "ACC_API_KEY": "'zimra:ed15c376-20d8-4642-9c2c-3ae742ba7572'",
+                "INSURANCE_SERVICE_URL": "\"http://192.168.4.15:9090/insurance/\"",
+                "MOCK_REGISTRAR": "false"
               }
             },
             "development": {
@@ -85,12 +88,15 @@
               "extractLicenses": false,
               "sourceMap": true,
               "define": {
-                "SELF_SERVICE_URL": "\"http://192.168.4.14:7000/self-service/\"",
+                "SELF_SERVICE_URL": "\"http://192.168.4.14:7000/api/gateway/self-service/\"",
+                "CDN_SERVICE_URL": "\"http://192.168.4.14:7000/api/gateway/\"",
                 "MOBILE_BANKING_SERVICE_URL": "\"http://192.168.4.13:8090/\"",
                 "OUTPOST_URL": "\"http://192.168.1.106:8075/api/outpost/\"",
                 "ACC_ENQ_URL": "\"http://192.168.4.13:8150/txn-banking/txn-agency-banking/tran-request/\"",
                 "SECRET_KEY": "SwxBnHRjrtuIi3RFecViAlH39N5j6gBK",
-                "ACC_API_KEY": "'zimra:xJaviz0dzSwWC3qBWaU6N8T7EpmETqkn'"
+                "ACC_API_KEY": "'zimra:xJaviz0dzSwWC3qBWaU6N8T7EpmETqkn'",
+                "INSURANCE_SERVICE_URL": "\"http://192.168.4.15:9090/insurance/\"",
+                "MOCK_REGISTRAR": "true"
               }
             },
             "staging": {
@@ -100,7 +106,9 @@
                 "OUTPOST_URL": "\"http://192.168.1.106:8075/api/outpost/\"",
                 "ACC_ENQ_URL": "\"http://192.168.4.13:8150/txn-banking/txn-agency-banking/tran-request/\"",
                 "SECRET_KEY": "Tz7GvJ9Yks3Lp2XaNq8Rm6DhC5Q1wWUE",
-                "ACC_API_KEY": "'zimra:xJaviz0dzSwWC3qBWaU6N8T7EpmETqkn'"
+                "ACC_API_KEY": "'zimra:xJaviz0dzSwWC3qBWaU6N8T7EpmETqkn'",
+                "INSURANCE_SERVICE_URL": "\"http://192.168.4.15:9090/insurance/\"",
+                "MOCK_REGISTRAR": "true"
               }
             }
           },

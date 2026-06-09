@@ -15,6 +15,7 @@ export const serverErrorsInterceptor: HttpInterceptorFn = (req: HttpRequest<unkn
 
   return next(req).pipe(
     catchError((err: HttpErrorResponse) => {
+      console.log("Error caught")
       console.log(Object.keys(err))
       console.log(Object.values(err))
       if (err.url !== 'http://localhost:4200/') {

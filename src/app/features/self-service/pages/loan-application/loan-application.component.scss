@@ -197,13 +197,13 @@ nz-select {
   margin-right: 8px;
 }
 
-.t-c-click {
-  color: $primary6;
+a.t-c-click {
+  color: $primary6 !important;
   font-weight: 500;
   transition-duration: .5s;
 }
 
-.t-c-click:hover {
+a.t-c-click:hover {
   cursor: pointer;
   font-weight: 800;
 }

@@ -8,6 +8,7 @@ import { NzUploadFile } from 'ng-zorro-antd/upload';
 import { RoutingService } from '../../../../core/services/routing.service';
 import { AccountOpeningService } from '../../services/account-opening.service';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
+import {InsuranceService} from "../../services/insurance.service";
 
 @Component({
   selector: 'app-insurance-application',
@@ -21,8 +22,9 @@ export class InsuranceApplicationComponent implements OnInit, OnDestroy {
       private accountOpeningService: AccountOpeningService,
       private notification: NzNotificationService,
       private cdr: ChangeDetectorRef,
-      private breakpointObserver: BreakpointObserver
-    ) { 
+      private breakpointObserver: BreakpointObserver,
+      private insuranceService: InsuranceService,
+    ) {
       this.breakpointObserver.observe([
         Breakpoints.XSmall, // Phones
         Breakpoints.Small,  // Small tablets
@@ -36,32 +38,118 @@ export class InsuranceApplicationComponent implements OnInit, OnDestroy {
     }
 
   ngOnInit(): void {
+    this.getRiskClasses();
     this.subs.add = this.accountOpeningService.queryRegistrarResponse$.subscribe((res: any) => {
       this.onQueryRegistrarResponse(res);
     });
 
-    this.subs.add = this.accountOpeningService.createNewRecordResponse$.subscribe((res: any) => {
-      this.onCreateNewRecordResponse(res);
+    this.subs.add = this.insuranceService.generateQuotationResponse$.subscribe((res: any) => {
+      this.onGenerateQuotationResponse(res);
+    });
+
+    this.subs.add = this.insuranceService.getRiskClassesResponse$.subscribe((res: any) => {
+      this.onGetRiskClassesResponse(res);
+    });
+
+    this.subs.add = this.insuranceService.acceptQuotationResponse$.subscribe((res: any) => {
+      this.onAcceptQuotationResponse(res);
     });
   }
 
-  onCreateNewRecordResponse(res: any) {
+  onGetRiskClassesResponse(res: any) {
+    console.log(res)
+    if (res.success) {
+      this.riskClasses = res.data;
+    } else {
+      this.notification.create('error', 'Error', 'Failed to process request');
+    }
+    this.getRiskClassesLoader = false;
+  }
+
+  generateQuotationResponse?: any;
+  currentDate = new Date();
+
+  onGenerateQuotationResponse(res: any) {
+    console.log(res)
+    if (res.success) {
+      this.generateQuotationResponse = res.data
+    } else {
+      this.notification.create('error', 'Error', 'Failed to process request');
+    }
+    this.generateQuotationLoader = false;
+  }
+
+  onAcceptQuotationResponse(res: any) {
     console.log(res);
-    if (res.data.id) {
-      this.notification.create('success', 'Success', 'Request submitted successfully');
-      this.savedTicketNumber = res.data.ticketId;
-      this.isDoneVisible = true;
+    if (res.success) {
+      this.notification.create('success', 'Success', res.message);
+      this.navigateTo('home');
+
     } else {
       this.notification.create('error', 'Error', 'Request failed');
     }
-    this.insureProductLoader = false;
+    this.acceptQuotationLoader = false;
   }
+
 
   savedTicketNumber?: any;
 
+  onMockRegistrar() {
+
+    let res = {
+      Status: "A",
+      Surname: "DOE",
+      FirstName: "JOHN",
+      Sex: "M",
+      DateOfBirth: "10/11/1984",
+      DateOfDeath: "",
+      BirthPlace: "Checheche",
+      NationalId: "63159352K23"
+    }
+
+        // Assuming dateOfBirth is a string in the format 'YYYY-MM-DD' (adjust if necessary)
+        const dateOfBirth = this.parseDate(res.DateOfBirth);  // Convert to Date object
+        // const dateOfBirth = this.parseDate("23/05/2010");  // Convert to Date object
+        console.log('Date of birth:', res.DateOfBirth);
+        console.log('Date of birth:', dateOfBirth);
+
+        if(res.Sex == 'M') {
+          console.log("MALE")
+          this.title = [...this.title, "MR"];
+        }
+        if(res.Sex == 'F') {
+          console.log("FEMALE")
+          this.title = [...this.title, "MRS", "MISS", "MS"];
+        }
+
+
+
+        if (!dateOfBirth) {
+          this.notification.create('error', 'Error', 'Invalid date of birth');
+          return;
+        }
+
+        // Calculate age
+        const age = this.calculateAge(dateOfBirth);
+        console.log('Age:', age);
+
+        // If age is less than 18, prevent them from proceeding
+        if (age < 18) {
+          this.queryRegistrarLoader = false;
+          this.isAgeVisible = true;
+          return;  // Stop further execution
+        }
+
+        // Proceed with registration if age is 18 or older
+        this.registrarResponse = res;
+        this.applicationState.registrarData = true;
+        this.processRegistrarData();
+    this.queryRegistrarLoader = false;
+  }
+
+
   onQueryRegistrarResponse(res: any) {
     console.log(res);
-  
     if (res.success) {
       if (res.data.Status == "A") {
         // Assuming dateOfBirth is a string in the format 'YYYY-MM-DD' (adjust if necessary)
@@ -80,24 +168,24 @@ export class InsuranceApplicationComponent implements OnInit, OnDestroy {
           this.title = [...this.title, "MRS", "MISS", "MS"];
         }
 
-        
-  
+
+
         if (!dateOfBirth) {
           this.notification.create('error', 'Error', 'Invalid date of birth');
           return;
         }
-  
+
         // Calculate age
         const age = this.calculateAge(dateOfBirth);
         console.log('Age:', age);
-  
+
         // If age is less than 18, prevent them from proceeding
         if (age < 18) {
           this.queryRegistrarLoader = false;
           this.isAgeVisible = true;
           return;  // Stop further execution
         }
-  
+
         // Proceed with registration if age is 18 or older
         this.registrarResponse = res.data;
         this.applicationState.registrarData = true;
@@ -145,31 +233,94 @@ export class InsuranceApplicationComponent implements OnInit, OnDestroy {
     this.tcVisible = false;
   }
 
+  riskClasses?: any;
+  getRiskClassesLoader: boolean = false;
+  getRiskClasses() {
+    console.log("Fetching Risk Classes");
+    this.getRiskClassesLoader = true;
+    this.insuranceService.getRiskClasses();
+  }
+
   // Insurance Application
 
   insuranceApplicationForm = {
     personalInformation: {
-      idNumber: '',
-      title: '',
+      status: '',
+      surname: '',
       firstName: '',
-      lastName: '',
-      gender: '',
+      sex: '',
+      nationalId: '',
       dateOfBirth: '',
-      mobileNumber: '',
-      emailAddress: '', // optional
+      email: '',
+      phone: '',
       address: '',
+      customerType: ''
     },
     productInformation: {
-      productImages: [] as string[],
-      insuranceProduct: '',
+      periodOfCover: '',
+      riskClassId: '',
+      description: '',
       sumInsured: '',
-    },
-    quotation: {
-      policyDetails: '',
-      premiumAmount: '',
-      paymentOption: '',
+      registrationNumber: '',
+      riskClass: {} as any,
     }
   };
+
+  formatForQuotaionGeneration(){
+    console.log(this.insuranceApplicationForm)
+    let request = {
+      customerDto: {
+        registrar: {
+          status: this.insuranceApplicationForm.personalInformation.status,
+          surname: this.insuranceApplicationForm.personalInformation.surname,
+          firstName: this.insuranceApplicationForm.personalInformation.firstName,
+          sex: this.insuranceApplicationForm.personalInformation.sex,
+          nationalId: this.insuranceApplicationForm.personalInformation.nationalId,
+          dateOfBirth: this.formatDateSlash(this.insuranceApplicationForm.personalInformation.dateOfBirth)
+        },
+
+        email: this.insuranceApplicationForm.personalInformation.email,
+        phone: this.insuranceApplicationForm.personalInformation.phone,
+        address: this.insuranceApplicationForm.personalInformation.address,
+        customerType: this.insuranceApplicationForm.personalInformation.customerType
+      },
+      policyDto: {
+        periodOfCover: this.insuranceApplicationForm.productInformation.periodOfCover,
+        riskClassId: this.insuranceApplicationForm.productInformation.riskClass.id
+      },
+      insuredItemsDtoList: [
+        {
+          description: this.insuranceApplicationForm.productInformation.description,
+          registrationNumber: this.insuranceApplicationForm.productInformation.registrationNumber,
+          sumInsured: this.insuranceApplicationForm.productInformation.sumInsured,
+          riskClass: this.insuranceApplicationForm.productInformation.riskClass.riskClassName
+        }
+      ],
+      riskClassId: this.insuranceApplicationForm.productInformation.riskClass.id
+    }
+
+    console.log(request);
+    return request;
+  }
+
+  formatDate(req: any){
+    return req?.toISOString().split('T')[0];
+  }
+
+  formatDateSlash(input: string): string {
+    const date = new Date(input.replace(/\//g, '-')); // Normalize input for Date parsing
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
+    const day = String(date.getDate()).padStart(2, '0');
+
+    return `${year}-${month}-${day}`;
+  }
+
+  generateQuotationLoader: boolean = false;
+  generateQuotation(req: any){
+    this.generateQuotationLoader = true;
+    this.insuranceService.generateQuotation(req)
+  }
 
   applicationState = {
     sectionStates: {
@@ -181,6 +332,24 @@ export class InsuranceApplicationComponent implements OnInit, OnDestroy {
     registrarData: false,
   };
 
+  maritalStatusOptions: string[] = [
+    "MARRIED",
+    "DIVORCED",
+    "SINGLE",
+    "WIDOWED"
+  ];
+
+  periodOfCover: string[] = [
+    "3",
+    "6",
+    "9",
+    "12"
+  ];
+
+  customerType: string[] = [
+    "Individual"
+  ];
+
   current = 0;
 
 
@@ -190,11 +359,15 @@ export class InsuranceApplicationComponent implements OnInit, OnDestroy {
 
   next(): void {
     if(this.current == 0) {
-      const isValid = this.validateMobileNumber(this.insuranceApplicationForm.personalInformation.mobileNumber);
+      const isValid = this.validateMobileNumber(this.insuranceApplicationForm.personalInformation.phone);
       if (!isValid) {
         this.notification.create('error', 'Error', 'The mobile number you entered is invalid')
         return; // Stop execution if mobile number is invalid
       }
+    }
+    if(this.current == 1) {
+      let request = this.formatForQuotaionGeneration();
+      this.generateQuotation(request);
     }
     if(this.current == 3) {
         this.uploadAttachments();
@@ -202,12 +375,12 @@ export class InsuranceApplicationComponent implements OnInit, OnDestroy {
     this.current += 1;
   }
 
-  insureProductLoader: boolean = false;
+  acceptQuotationLoader: boolean = false;
 
   done(): void {
-    this.insureProductLoader = true;
+    this.acceptQuotationLoader = true;
     console.log(this.insuranceApplicationForm);
-    this.accountOpeningService.createNewRecord(this.insuranceApplicationForm, 'insure');
+    this.insuranceService.acceptQuotation(this.generateQuotationResponse.id)
   }
 
   isDoneVisible = false;
@@ -218,15 +391,19 @@ export class InsuranceApplicationComponent implements OnInit, OnDestroy {
   queryRegistrarLoader: boolean = false;
 
   getRegistrarData() {
-    this.insuranceApplicationForm.personalInformation.idNumber = this.removeSpecialCharacters(this.insuranceApplicationForm.personalInformation.idNumber)
-    this.queryRegistrarLoader = true;
-    this.accountOpeningService.queryRegistrar(this.removeSpecialCharacters(this.insuranceApplicationForm.personalInformation.idNumber));
+    // if (MOCK_REGISTRAR) {
+    //   this.onMockRegistrar()
+    // } else {
+      this.insuranceApplicationForm.personalInformation.nationalId = this.removeSpecialCharacters(this.insuranceApplicationForm.personalInformation.nationalId)
+      this.queryRegistrarLoader = true;
+      this.accountOpeningService.queryRegistrar(this.removeSpecialCharacters(this.insuranceApplicationForm.personalInformation.nationalId));
+    // }
   }
 
   processRegistrarData() {
     this.insuranceApplicationForm.personalInformation.firstName = this.registrarResponse.FirstName;
-    this.insuranceApplicationForm.personalInformation.lastName = this.registrarResponse.Surname;
-    this.insuranceApplicationForm.personalInformation.gender = this.processGender(this.registrarResponse.Sex)
+    this.insuranceApplicationForm.personalInformation.surname = this.registrarResponse.Surname;
+    this.insuranceApplicationForm.personalInformation.sex = this.processGender(this.registrarResponse.Sex)
 
     const dateString = this.registrarResponse.DateOfBirth; // e.g., "23/05/1973"
     const [day, month, year] = dateString.split("/").map(Number);
@@ -263,12 +440,12 @@ export class InsuranceApplicationComponent implements OnInit, OnDestroy {
     const fileLists = [
       this.productFileList,
     ];
-  
+
     return fileLists.every(list => list.length > 0);
   }
 
     productFileList: any[] = [];
-  
+
     checkProductUploadFile = (file: NzUploadFile): boolean => {
       this.productFileList = this.productFileList.concat(file);
       return false;
@@ -298,11 +475,11 @@ export class InsuranceApplicationComponent implements OnInit, OnDestroy {
   // Uploads
   async uploadAttachments() {
     console.log(this.productFileList);
-  
+
     try {
       const productDocs = await this.processUpload(this.productFileList);
-      this.insuranceApplicationForm.productInformation.productImages = productDocs.map((item) => item.id); // Keep as an array
-  
+      // this.insuranceApplicationForm.productInformation.productImages = productDocs.map((item) => item.id);
+
       console.log("-------------------");
       console.log(this.insuranceApplicationForm.productInformation);
     } catch (error) {
@@ -312,18 +489,18 @@ export class InsuranceApplicationComponent implements OnInit, OnDestroy {
 
   processUpload(fileList: any): Promise<any[]> {
     const uploadPromises: Promise<any>[] = [];
-  
+
     fileList.forEach((file: any) => {
       const formData: FormData = new FormData();
       formData.append("files", file);
       formData.append("service", "ACCOUNT-OPEN");
       formData.append("temporary", "false");
-  
+
       const uploadPromise = new Promise<any>((resolve, reject) => {
         this.accountOpeningService.uploadFile(formData).subscribe({
           next: (response) => {
             console.log(`Upload successful`, response);
-  
+
             // Ensure response.data is properly extracted
             if (response && response.data) {
               resolve(response.data); // Resolve with data
@@ -338,15 +515,15 @@ export class InsuranceApplicationComponent implements OnInit, OnDestroy {
           },
         });
       });
-  
+
       uploadPromises.push(uploadPromise);
     });
-  
+
     return Promise.all(uploadPromises).then((results) => {
       return results.flat(); // Flatten in case each upload returns multiple items
     });
   }
-  
+
 
 
   completeUploadPromises(uploadPromises: any) {
@@ -383,6 +560,7 @@ export class InsuranceApplicationComponent implements OnInit, OnDestroy {
   }
 
   generatePDF() {
+    // @ts-ignore
     var data = document.getElementById('terms-and-conditions')!;
     html2canvas(data).then((canvas) => {
       var docName = 'AFC Commercial Bank Account Opening Terms and Conditions ' + new Date();
@@ -460,12 +638,12 @@ export class InsuranceApplicationComponent implements OnInit, OnDestroy {
     const today = new Date();
     let age = today.getFullYear() - dateOfBirth.getFullYear();
     const monthDifference = today.getMonth() - dateOfBirth.getMonth();
-    
+
     // If birthday hasn't occurred yet this year, subtract 1 from age
     if (monthDifference < 0 || (monthDifference === 0 && today.getDate() < dateOfBirth.getDate())) {
       age--;
     }
-    
+
     return age;
   }
 

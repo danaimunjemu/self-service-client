@@ -9,7 +9,7 @@
           <nz-form-item>
             <nz-form-control nzErrorTip="Please input your username!">
               <nz-input-group nzPrefixIcon="phone">
-                <input nz-input name="username" [(ngModel)]="loginForm.username" placeholder="Phone Number" />
+                <input nz-input name="username" [(ngModel)]="loginForm.username" placeholder="Enter your number in the format 263..." />
               </nz-input-group>
             </nz-form-control>
           </nz-form-item>
@@ -19,9 +19,9 @@
                   <nz-input-group nzPrefixIcon="lock">
                   <input name="pin" type="password" nz-input [(ngModel)]="loginForm.password" placeholder="PIN" />
                 </nz-input-group>
-                
+
                 </div>
-                
+
             </nz-form-control>
           </nz-form-item>
           <div class="mt-3 d-flex justify-content-center" *ngIf="!otpIsVisible">
@@ -46,13 +46,13 @@
         </div>
           <nz-form-item *ngIf="otpIsVisible" class="mt-3">
               <nz-form-control nzErrorTip="Please input your Password!" >
-                
+
                 <div class="d-flex">
                   <nz-input-group nzPrefixIcon="lock">
                     <input name="otp" type="password" nz-input [(ngModel)]="loginForm.otp" placeholder="OTP" />
                   </nz-input-group>
                 </div>
-                
+
               </nz-form-control>
             </nz-form-item>
             <div class="mt-3 d-flex justify-content-center" *ngIf="otpIsVisible">

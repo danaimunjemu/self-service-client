@@ -73,8 +73,8 @@
         </div>
       </div>
     </div>
-    
-    
+
+
 
 
 
@@ -90,7 +90,7 @@
           <div class="col-md-3"></div>
           <div class="col-md-6 d-flex align-items-center">
             <div>
-              
+
               <div id="carouselExampleIndicators" class="carousel slide" data-bs-ride="carousel">
                 <!-- <div class="carousel-indicators">
                   <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
@@ -118,7 +118,7 @@
                           />
                         </div>
                       </div>
-                    
+
                       </div>
                   </div>
                   <!-- <div class="carousel-item" data-bs-interval="5000">
@@ -141,7 +141,7 @@
                           />
                         </div>
                       </div>
-                    
+
                       </div>
                   </div> -->
                   <!-- <div class="carousel-item">
@@ -192,7 +192,7 @@
           </div>
           <div class="col-md-3"></div>
         </div>
-        
+
 
         <div class="mt-5 d-flex justify-content-center arrow-down-container">
           <div>
@@ -257,7 +257,7 @@
               <div class="admin-card-header">FAQs</div>
             </div>
           </div> -->
-          <!-- <div nz-col nzXs="24" nzSm="12" nzMd="12" nzLg="8" nzXl="8">
+          <div nz-col nzXs="24" nzSm="12" nzMd="12" nzLg="8" nzXl="8">
             <div
               class="admin-stats-card"
               (click)="navigateTo('loan-application')"
@@ -271,7 +271,7 @@
               </div>
               <div class="admin-card-header">Apply for a Loan</div>
             </div>
-          </div> -->
+          </div>
           <!-- <div nz-col nzXs="24" nzSm="12" nzMd="12" nzLg="8" nzXl="8">
             <div
               class="admin-stats-card"
@@ -343,7 +343,7 @@
                 <span nz-typography>MESSAGE</span>
                 {{queryTicket.ticket.message}}
               </nz-list-item>
-  
+
               <nz-list-item>
                 <span nz-typography>STATUS</span>
                 <nz-tag nzColor="yellow" [nzBordered]="false">{{queryTicket.ticket.status}}</nz-tag>
@@ -364,12 +364,12 @@
                 <span nz-typography>STATUS</span>
                 {{queryTicket.record.qualify=='true' ? 'PASSED' : 'FAILED'}}
               </nz-list-item>
-            
+
             </nz-list>
 
             <div class="mt-3" *ngIf="queryTicket.record.state=='PENDING_GUARANTOR'">
                 <div class="d-flex justify-content-center">
-                
+
                   <button nz-button nzType="primary" (click)="resendOtpToGuarantor()" [nzLoading]="guarantorConfirmationLoader">
                     Resend OTP to Guarantor
                   </button>
@@ -393,12 +393,32 @@
               </div>
             </div>
           }
-          
+          @if (queryTicket.ticket.service == 'posman') {
+            <nz-list nzBordered>
+              <nz-list-item>
+                <span nz-typography>SERVICE</span>
+                {{queryTicket.ticket.service}}
+              </nz-list-item>
+              <nz-list-item>
+                <span nz-typography>MESSAGE</span>
+                {{queryTicket.ticket.message}}
+              </nz-list-item>
+
+              <nz-list-item>
+                <span nz-typography>STATUS</span>
+                <nz-tag nzColor="yellow" [nzBordered]="false">{{queryTicket.ticket.status}}</nz-tag>
+              </nz-list-item>
+            </nz-list>
+          }
+
         </div>
-        
+
       </div>
     }
   </ng-template>
 
   <ng-template #modalFooter> </ng-template>
 </nz-modal>
+
+
+

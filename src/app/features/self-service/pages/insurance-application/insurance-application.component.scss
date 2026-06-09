@@ -6,7 +6,7 @@
     font-size: 20px;
     color: $primary6;
   }
-  
+
   .modal-paragraph {
     text-align: center;
     color: #62686a;
@@ -16,14 +16,14 @@
   .modal-icon {
     color: $primary6;
   }
-  
+
   .form-container {
     min-height: calc(100vh - 185px);
     padding: 40px 0px;
     display: flex;
     flex-direction: column;
   }
-  
+
   .form {
     background-color: rgba(255, 255, 255, 0.9);
     flex-grow: 1;
@@ -34,23 +34,23 @@
       rgba(0, 0, 0, 0.06) 0px 1px 2px 0px;
     padding: 20px;
   }
-  
+
   .button-container {
     margin: 0px 10px;
   }
-  
+
   .ant-input {
     margin: 0px !important;
   }
-  
+
   nz-select {
     width: 100%;
   }
-  
+
   .ant-picker {
     width: 100%;
   }
-  
+
   .ant-page-header {
     padding: 16px 0;
   }
@@ -61,7 +61,7 @@
     font-size: 20px;
     margin-right: 8px;
   }
-  
+
   .responsive-stepper-container {
     display: none;
   }
@@ -70,17 +70,17 @@
 
 /* Laptops (≤ 1024px) */
 @media (max-width: 1024px) {
-  
+
 }
 
 /* Tablets (≤ 768px) */
 @media (max-width: 768px) {
-  
+
 }
 
 /* Large Phones (≤ 600px) */
 @media (max-width: 600px) {
-  
+
 }
 
 /* Small Phones (≤ 400px) */
@@ -91,4 +91,60 @@
   .responsive-stepper-container {
     display: contents;
   }
+}
+
+.ticket-top {
+  padding: 10px;
+  background-color: #ffffff;
+  border-radius: 10px;
+}
+
+.ticket-bottom {
+  padding: 10px;
+  background-color: #ffffff;
+  border-radius: 10px;
+  border-top: 1px dashed #ccc;
+}
+
+.barcode {
+  height: 50px;
+  width: 150px;
+}
+
+.ticket-heading {
+  font-size: 12px;
+  color: #ACADAF;
+  text-transform: uppercase;
+  margin-bottom: 2px;
+}
+
+.ticket-details {
+  font-size: 12px;
+  color: black;
+  margin-bottom: 2px;
+  font-family: "Space Mono", monospace;
+}
+
+.ticket-id-banner {
+  background-color: grey;
+  background-color: #EAEDF0;
+  display: flex;
+  justify-content: center;
+  padding: 5px 10px;
+  font-size: 14px;
+  font-family: "Space Mono", monospace;
+}
+
+.authorise-document-a4-page {
+  padding: 12mm 10mm !important;
+  margin: auto;
+  border-radius: 2px;
+  background-color: hsl(0, 0%, 100%);
+  box-shadow: 0 0 2rem rgba(51, 71, 80, 0.02);
+  height: 100%;
+  overflow: scroll;
+  max-width: 21cm;
+  border: 1px solid transparent;
+  page-break-after: always;
+  max-height: calc(100vh - 404px);
 }

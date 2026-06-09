@@ -18,6 +18,8 @@ export class AccountOpeningService {
   updateGuarantorResponse$ = new Subject();
   getLoanByRefResponse$ = new Subject();
   guarantorAccountEnquiryResponse$ = new Subject();
+  getBranchesResponse$ = new Subject();
+  getMccResponse$ = new Subject();
 
   queryRegistrar(req: any) {
     this.http.post(SELF_SERVICE_URL + 'query/registrar/' + req, {}).subscribe((res: any) => {
@@ -26,7 +28,7 @@ export class AccountOpeningService {
   }
 
   uploadFile(req: any): Observable<any> {
-    return this.http.post(SELF_SERVICE_URL + 'cdn/upload', req);
+    return this.http.post(CDN_SERVICE_URL + 'cdn', req);
   }
 
   createNewRecord(req: any, service: any) {
@@ -62,6 +64,18 @@ export class AccountOpeningService {
   guarantorAccountEnquiry(req: any) {
     this.http.post(SELF_SERVICE_URL + 'query/account/' + req, {}).subscribe((res: any) => {
       this.guarantorAccountEnquiryResponse$.next(res);
+    })
+  }
+
+  getBranches() {
+    this.http.post(SELF_SERVICE_URL + 'external?service=juser&post=false&ep=branches&lb=true', {"success": false}).subscribe((res: any) => {
+      this.getBranchesResponse$.next(res);
+    })
+  }
+
+  getMcc() {
+    this.http.post(SELF_SERVICE_URL + 'external?service=rposman&post=false&ep=getMCC&lb=false', {"success": false}).subscribe((res: any) => {
+      this.getMccResponse$.next(res);
     })
   }
 

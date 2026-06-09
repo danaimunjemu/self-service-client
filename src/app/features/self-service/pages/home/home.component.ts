@@ -100,4 +100,6 @@ this.showModal();
     this.guarantorConfirmationLoader = true;
     this.accountOpeningService.updateGuarantor(this.queryTicket.record, 'guarantor-resend-otp');
   }
+
+
 }

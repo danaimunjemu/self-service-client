@@ -1,0 +1,1489 @@
+<div class="mt-5">
+  <div class="container stepper-container">
+    <nz-steps [nzCurrent]="current">
+      <nz-step nzTitle="Personal Information"></nz-step>
+      <nz-step nzTitle="Contact Details"></nz-step>
+      <nz-step nzTitle="Employment Details"></nz-step>
+      <nz-step nzTitle="Documents"></nz-step>
+      <nz-step nzTitle="Loan Application"></nz-step>
+      <nz-step nzTitle="Submit"></nz-step>
+    </nz-steps>
+  </div>
+
+  <div>
+    <div class="steps-action d-flex">
+      <div class="steps-content flex-grow-1">
+        <div class="form-container h-100">
+          <div class="container h-100">
+            <div class="form">
+              <div class="d-flex flex-column h-100">
+                <div class="flex-grow-1">
+                  <div class="responsive-stepper-container">
+                    {{ current==0 ? 'Personal Information' :
+                    current==1 ? 'Contact Details' :
+                    current==2 ? 'Employment Details' :
+                    current==3 ? 'Documents' :
+                    current==3 ? 'Loan Application' :
+                    'Submit'
+                    }}
+                  </div>
+                  <div class="d-flex justify-content-between">
+                    <div class="d-flex align-items-center">
+                      <p style="margin: 0;">
+                        <span *ngIf="current != 4">
+                          The fields marked with an asterisk (<span
+                            style="color: rgb(255, 71, 87);font-family: 'Space Mono', monospace; font-size: 20px;">*</span>)
+                          are mandatory and must be completed to enable you to proceed to the next stage.
+                        </span>
+                      </p>
+                    </div>
+                    <div class="">
+                      <afc-button nz-tooltip nzTooltipTitle="Cancel Application" nz-popconfirm
+                        nzPopconfirmTitle="Are you sure you want to cancel and exit the process?"
+                        nzPopconfirmPlacement="bottom" (nzOnConfirm)="openLeavePageModal()" [label]="'Cancel'"
+                        [loading]="false" [style]="'exit'" [size]="'sm'" />
+                    </div>
+
+                  </div>
+
+
+                  @if (current == 0) {
+                  <div>
+                    <div>
+                      <div class="d-flex">
+                        <div>
+                          <nz-page-header nzTitle="Identification" nzSubtitle="Please enter your ID Number">
+                          </nz-page-header>
+                        </div>
+                        <div class="d-flex align-items-center">
+                          <nz-tag [nzColor]="
+                                  (checkInformation('personalInformation', [
+                                    'pidType',
+                                    'title',
+                                    'firstName',
+                                    'middleName',
+                                    'lastName',
+                                    'gender',
+                                    'dateOfBirth',
+                                    'primaryNationality',
+                                    'maritalStatus',
+                                    'pidDateOfIssue',
+                                    'contactPerson',
+                                    'nextOfKinAddress',
+                                    'contactPersonMobileNumber',
+                                  ]) && applicationState.registrarData)
+                                    ? 'green'
+                                    : 'yellow'
+                                " [nzBordered]="false">{{
+                            (checkInformation('personalInformation', [
+                            'pidType',
+                            'title',
+                            'firstName',
+                            'middleName',
+                            'lastName',
+                            'gender',
+                            'dateOfBirth',
+                            'primaryNationality',
+                            'maritalStatus',
+                            'pidDateOfIssue',
+                            'contactPerson',
+                            'nextOfKinAddress',
+                            'contactPersonMobileNumber',
+                            ]) && applicationState.registrarData)
+                            ? "Complete"
+                            : "Pending"
+                            }}</nz-tag>
+                        </div>
+                      </div>
+                      <div class="d-flex">
+                        <div><span class="required-field">*</span></div>
+
+                        <div>
+
+                          <nz-input-group nzSearch [nzAddOnAfter]="suffixIconButton">
+                            <input type="text" nz-input placeholder="Enter Your ID Number" [(ngModel)]="
+                                  createAccountForm.personalInformation.pidNumber
+                                " [disabled]="
+                                 applicationState.registrarData" />
+                          </nz-input-group>
+                          <ng-template #suffixIconButton>
+                            <button [nzLoading]="queryRegistrarLoader" nz-button nzType="primary" nzSearch
+                              (click)="getRegistrarData()" [disabled]="
+                                  createAccountForm.personalInformation.pidNumber ==
+                                  ''
+                                ">
+                              Submit
+                              <span nz-icon nzType="sync"></span>
+                            </button>
+                          </ng-template>
+                        </div>
+                        <div class="ms-3">
+                          <button nz-button nzType="primary" nzSearch (click)="restartEntries()" [disabled]="
+                                  (createAccountForm.personalInformation.pidNumber ==
+                                  '') || (createAccountForm.personalInformation.pidNumber !== '' && !this.applicationState.registrarData)
+                                ">
+                            Restart
+                            <span nz-icon nzType="sync"></span>
+                          </button>
+                        </div>
+
+                      </div>
+                      <!-- Personal Information Entering -->
+                      @if (applicationState.registrarData) {
+                      <div class="mt-3">
+                        <div class="d-flex">
+                          <div>
+                            <nz-page-header nzTitle="Personal Details" nzSubtitle="Please complete the form below">
+                            </nz-page-header>
+                          </div>
+                          <div class="d-flex align-items-center">
+                            <nz-tag [nzColor]="
+                                      checkInformation('personalInformation', [
+                                        'middleName',
+                                      ])
+                                        ? 'green'
+                                        : 'yellow'
+                                    " [nzBordered]="false">{{
+                              checkInformation("personalInformation", [
+                              "middleName",
+                              ])
+                              ? "Complete"
+                              : "Pending"
+                              }}</nz-tag>
+                          </div>
+                        </div>
+
+                        <div>
+                          <div class="row">
+                            <div class="col-md-2"><span class="required-field">*</span>ID Date of Issue:</div>
+                            <div class="col-md-10">
+                              <div class="row">
+                                <div class="col-md-4">
+                                  <nz-date-picker [nzDisabledDate]="disabledDate" [nzDisabled]="false" [(ngModel)]="
+                                        createAccountForm.personalInformation.pidDateOfIssue
+                                      "></nz-date-picker>
+                                </div>
+                              </div>
+
+                            </div>
+                          </div>
+                          <div class="row mt-3">
+                            <div class="col-md-2 d-flex">
+                              <span class="required-field">*</span>
+                              <nz-select nzPlaceHolder="Title" [(ngModel)]="
+                                        createAccountForm.personalInformation.title
+                                      ">
+                                <nz-option *ngFor="let title of title" [nzValue]="title" [nzLabel]="title"></nz-option>
+                              </nz-select>
+                            </div>
+                            <div class="col-md-10">
+                              <div class="row">
+                                <div class="col-md-4">
+                                  <nz-input-group>
+                                    <input [disabled]="disableRegistrarInputs" placeholder="First Name" type="text"
+                                      nz-input [(ngModel)]="
+                                              createAccountForm.personalInformation
+                                                .firstName
+                                            " />
+                                  </nz-input-group>
+                                </div>
+                                <div class="col-md-4">
+                                  <nz-input-group>
+                                    <input placeholder="Middle Name" type="text" nz-input [(ngModel)]="
+                                              createAccountForm.personalInformation
+                                                .middleName
+                                            " />
+                                  </nz-input-group>
+                                </div>
+
+                                <div class="col-md-4">
+                                  <nz-input-group>
+                                    <input [disabled]="disableRegistrarInputs" placeholder="Last Name" type="text"
+                                      nz-input [(ngModel)]="
+                                              createAccountForm.personalInformation
+                                                .lastName
+                                            " />
+                                  </nz-input-group>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="row mt-3">
+                            <div class="col-md-2">
+                              <nz-select nzShowSearch nzAllowClear nzPlaceHolder="Gender"
+                                [nzDisabled]="disableRegistrarInputs" [(ngModel)]="
+                                            createAccountForm.personalInformation
+                                              .gender
+                                          ">
+                                <nz-option *ngFor="let option of gender" [nzLabel]="option"
+                                  [nzValue]="option"></nz-option>
+                              </nz-select>
+                            </div>
+                            <div class="col-md-10">
+                              <div class="row">
+                                <div class="col-md-4">
+                                  <nz-date-picker [nzDisabled]="disableRegistrarInputs" [(ngModel)]="
+                                            dateOfBirthDisplay
+                                          "></nz-date-picker>
+                                </div>
+                                <div class="col-md-4 d-flex">
+                                  <span class="required-field">*</span>
+                                  <nz-select nzShowSearch nzAllowClear nzPlaceHolder="Primary Nationality" [(ngModel)]="
+                                            createAccountForm.personalInformation
+                                              .primaryNationality
+                                          ">
+                                    <nz-option *ngFor="let option of countries" [nzLabel]="option.name"
+                                      [nzValue]="option.name"></nz-option>
+                                  </nz-select>
+                                </div>
+                                <div class="col-md-4 d-flex">
+                                  <span class="required-field">*</span>
+                                  <nz-select nzShowSearch nzAllowClear nzPlaceHolder="Marital Status" [(ngModel)]="
+                                            createAccountForm.personalInformation
+                                              .maritalStatus
+                                          ">
+                                    <nz-option *ngFor="
+                                              let option of maritalStatusOptions
+                                            " [nzLabel]="option" [nzValue]="option"></nz-option>
+                                  </nz-select>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      }
+                    </div>
+                  </div>
+                  }
+                  @if (current == 1) {
+                  <div>
+                    <div>
+                      <div class="d-flex">
+                        <div>
+                          <nz-page-header nzTitle="Contact Information"
+                            nzSubtitle="Please enter your contact information">
+                          </nz-page-header>
+                        </div>
+                        <div class="d-flex align-items-center">
+                          <nz-tag [nzColor]="
+                                  checkInformation('contactDetails', [
+                                  'emailAddress',
+                                  'branch',
+                                    'addressType',
+                                    'addressLine1',
+                                    'city',
+                                    'country',
+                                    'streetAddress',
+                                    'stayingSince',
+                                    'preferSms',
+                                    'useAsPermanentAddress',
+                                    'stayingSince',
+                                    'preferSms',
+                                    'useAsPermanentAddress',
+                                    'allowSmsAlerts',
+                                    'preferredMethodOfContact',
+                                    'contactPerson',
+                                    'nextOfKinAddress',
+                                    'contactPersonMobileNumber'
+                                  ])
+                                    ? 'green'
+                                    : 'yellow'
+                                " [nzBordered]="false">{{
+                            checkInformation('contactDetails', [
+                            'emailAddress',
+                            'branch',
+                            'addressType',
+                            'addressLine1',
+                            'city',
+                            'country',
+                            'streetAddress',
+                            'stayingSince',
+                            'preferSms',
+                            'useAsPermanentAddress',
+                            'stayingSince',
+                            'preferSms',
+                            'useAsPermanentAddress',
+                            'allowSmsAlerts',
+                            'preferredMethodOfContact',
+                            'contactPerson',
+                            'nextOfKinAddress',
+                            'contactPersonMobileNumber'
+                            ])
+                            ? "Complete"
+                            : "Pending"
+                            }}</nz-tag>
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-md-6 d-flex">
+                          <span class="required-field">*</span>
+                          <div class="d-flex flex-column">
+                            <div>
+                              <nz-input-group>
+                                <input placeholder="Mobile Number" type="text" nz-input [(ngModel)]="
+                                        createAccountForm.contactDetails.mobileNumber
+                                      " />
+                              </nz-input-group>
+                            </div>
+                            <div style="font-size: 12px;color: rgba(0, 0, 0, 0.45);font-style: italic;">
+                              Enter your mobile number using this format: 07********
+                            </div>
+                          </div>
+
+
+                        </div>
+                        <div class="col-md-4 d-flex">
+                          <nz-input-group>
+                            <input placeholder="Email Address" type="email" nz-input [(ngModel)]="
+                                    createAccountForm.contactDetails.emailAddress
+                                  " />
+                          </nz-input-group>
+                        </div>
+                        <div class="col-md-4"></div>
+                      </div>
+                    </div>
+                    <!-- Address -->
+                    <div>
+                      <div class="d-flex">
+                        <div>
+                          <nz-page-header nzTitle="Address" nzSubtitle="Please enter your address details">
+                          </nz-page-header>
+                        </div>
+                        <div class="d-flex align-items-center">
+                          <nz-tag [nzColor]="
+                                  checkInformation('contactDetails', [
+                                    'branch',
+                                    'emailAddress',
+                                    'mobileNumber',
+                                    'preferSms',
+                                    'useAsPermanentAddress',
+                                    'preferSms',
+                                    'useAsPermanentAddress',
+                                    'allowSmsAlerts',
+                                    'preferredMethodOfContact',
+                                    'contactPerson',
+                                    'nextOfKinAddress',
+                                    'contactPersonMobileNumber'
+                                  ])
+                                    ? 'green'
+                                    : 'yellow'
+                                " [nzBordered]="false">{{
+                            checkInformation('contactDetails', [
+                            'branch',
+                            'emailAddress',
+                            'mobileNumber',
+                            'preferSms',
+                            'useAsPermanentAddress',
+                            'preferSms',
+                            'useAsPermanentAddress',
+                            'allowSmsAlerts',
+                            'preferredMethodOfContact',
+                            'contactPerson',
+                            'nextOfKinAddress',
+                            'contactPersonMobileNumber'
+                            ])
+                            ? "Complete"
+                            : "Pending"
+                            }}</nz-tag>
+                        </div>
+                      </div>
+
+                      <div class="row">
+                        <div class="col-md-4 d-flex">
+                          <span class="required-field">*</span>
+                          <nz-select nzShowSearch nzAllowClear nzPlaceHolder="Address Type" [(ngModel)]="
+                                  createAccountForm.contactDetails.addressType
+                                ">
+                            <nz-option nzLabel="Permanent" nzValue="permanent"></nz-option>
+                            <nz-option nzLabel="Temporary" nzValue="temporary"></nz-option>
+                          </nz-select>
+                        </div>
+                        <div class="col-md-8 d-flex">
+                          <span class="required-field">*</span>
+                          <input placeholder="House Number" type="text" nz-input [(ngModel)]="
+                                  createAccountForm.contactDetails.addressLine1
+                                " />
+                        </div>
+                      </div>
+                      <div class="row mt-3">
+                        <div class="col-md-4 d-flex">
+                          <span class="required-field">*</span>
+                          <input placeholder="Street Name" type="text" nz-input [(ngModel)]="
+                                  createAccountForm.contactDetails.streetAddress
+                                " />
+                        </div>
+                        <div class="col-md-4 d-flex">
+                          <span class="required-field">*</span>
+                          <nz-select nzShowSearch nzAllowClear nzPlaceHolder="Town/City" [(ngModel)]="
+                                            createAccountForm.contactDetails.city
+                                          ">
+                            <nz-option *ngFor="
+                                              let option of city
+                                            " [nzLabel]="option" [nzValue]="option"></nz-option>
+                          </nz-select>
+
+                        </div>
+
+                        <div class="col-md-4 d-flex">
+                          <span class="required-field">*</span>
+                          <nz-select nzShowSearch nzAllowClear nzPlaceHolder="Country"
+                            [(ngModel)]="createAccountForm.contactDetails.country">
+                            <nz-option *ngFor="let option of countries" [nzLabel]="option.name"
+                              [nzValue]="option.name"></nz-option>
+                          </nz-select>
+                        </div>
+                      </div>
+                      <div class="row mt-3">
+                        <div class="col-md-4 d-flex">
+                          <div class=""><span class="required-field">*</span>Year of occupancy at current address:</div>
+
+
+                        </div>
+                        <div class="col-md-4">
+                          <nz-date-picker nzMode="year" [nzDisabledDate]="disabledYear" [(ngModel)]="
+                          createAccountForm.contactDetails.stayingSince
+                        "></nz-date-picker>
+
+                        </div>
+                        <div class="col-md-4">
+                          <label nz-checkbox [(ngModel)]="
+                                  createAccountForm.contactDetails.useAsPermanentAddress
+                                ">Use as permanent address</label>
+                        </div>
+                      </div>
+                    </div>
+                    <div>
+                      <div class="d-flex">
+                        <div>
+                          <nz-page-header nzTitle="Branch" nzSubtitle="Please select your preferred branch">
+                          </nz-page-header>
+                        </div>
+                        <div class="d-flex align-items-center">
+                          <nz-tag [nzColor]="
+                                  checkInformation('contactDetails', [
+                                    'mobileNumber',
+                                    'emailAddress',
+                                    'addressType',
+                                    'addressLine1',
+                                    'city',
+                                    'country',
+                                    'streetAddress',
+                                    'stayingSince',
+                                    'preferSms',
+                                    'useAsPermanentAddress',
+                                    'stayingSince',
+                                    'preferSms',
+                                    'useAsPermanentAddress',
+                                    'allowSmsAlerts',
+                                    'preferredMethodOfContact',
+                                    'contactPerson',
+                                    'nextOfKinAddress',
+                                    'contactPersonMobileNumber'
+                                  ])
+                                    ? 'green'
+                                    : 'yellow'
+                                " [nzBordered]="false">{{
+                            checkInformation('contactDetails', [
+                            'mobileNumber',
+                            'emailAddress',
+                            'addressType',
+                            'addressLine1',
+                            'city',
+                            'country',
+                            'streetAddress',
+                            'stayingSince',
+                            'preferSms',
+                            'useAsPermanentAddress',
+                            'stayingSince',
+                            'preferSms',
+                            'useAsPermanentAddress',
+                            'allowSmsAlerts',
+                            'preferredMethodOfContact',
+                            'contactPerson',
+                            'nextOfKinAddress',
+                            'contactPersonMobileNumber'
+                            ])
+                            ? "Complete"
+                            : "Pending"
+                            }}</nz-tag>
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-md-4 d-flex">
+                          <span class="required-field">*</span>
+                          <nz-select nzShowSearch nzPlaceHolder="Branch"
+                            [(ngModel)]="createAccountForm.contactDetails.branch">
+                            <nz-option *ngFor="let option of idcBranches" [nzLabel]="option.name"
+                              [nzValue]="option.code"></nz-option>
+                          </nz-select>
+                        </div>
+                      </div>
+                    </div>
+                    <div>
+                      <div class="d-flex">
+                        <div>
+                          <nz-page-header nzTitle="Next of Kin Contact Details"
+                            nzSubtitle="Please enter additional contact information">
+                          </nz-page-header>
+                        </div>
+                        <div class="d-flex align-items-center">
+                          <nz-tag [nzColor]="
+                                  checkInformation('contactDetails', [
+                                    'branch',
+                                    'emailAddress',
+                                    'mobileNumber',
+                                    'addressType',
+                                    'addressLine1',
+                                    'streetAddress',
+                                    'city',
+                                    'country',
+                                    'stayingSince',
+                                    'preferSms',
+                                    'useAsPermanentAddress',
+                                    'allowSmsAlerts',
+                                    'preferredMethodOfContact'
+                                  ])
+                                    ? 'green'
+                                    : 'yellow'
+                                " [nzBordered]="false">{{
+                            checkInformation('contactDetails', [
+                            'branch',
+                            'emailAddress',
+                            'mobileNumber',
+                            'addressType',
+                            'addressLine1',
+                            'streetAddress',
+                            'city',
+                            'country',
+                            'stayingSince',
+                            'preferSms',
+                            'useAsPermanentAddress',
+                            'allowSmsAlerts',
+                            'preferredMethodOfContact'
+                            ])
+                            ? "Complete"
+                            : "Pending"
+                            }}</nz-tag>
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-md-4 d-flex">
+                          <span class="required-field">*</span>
+                          <nz-input-group>
+                            <input placeholder="Next of Kin Full Name" type="text" nz-input [(ngModel)]="
+                                    createAccountForm.contactDetails.contactPerson
+                                  " />
+                          </nz-input-group>
+                        </div>
+                        <div class="col-md-4 d-flex">
+                          <span class="required-field">*</span>
+                          <nz-input-group>
+                            <input placeholder="Next of Kin Address" type="text" nz-input [(ngModel)]="
+                                    createAccountForm.contactDetails.nextOfKinAddress
+                                  " />
+                          </nz-input-group>
+                        </div>
+                        <div class="col-md-4 d-flex">
+                          <span class="required-field">*</span>
+                          <nz-input-group>
+                            <input placeholder="Next of Kin Mobile Number" type="text" nz-input [(ngModel)]="
+                                    createAccountForm.contactDetails.contactPersonMobileNumber
+                                  " />
+                          </nz-input-group>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  }
+                  @if (current == 2) {
+                  <div>
+                    <div class="d-flex">
+                      <div>
+                        <nz-page-header nzTitle="Employment Details"
+                          nzSubtitle="Please enter details about your current employment status">
+                        </nz-page-header>
+                      </div>
+                      <div class="d-flex align-items-center">
+                        <nz-tag [nzColor]="
+                                checkInformation('employmentDetails', [
+                                    'productCode',
+                                    'accountType',
+                                    'accountSubType'
+                                  ]) && (selectedProductCode)
+                                  ? 'green'
+                                  : 'yellow'
+                              " [nzBordered]="false">{{
+                          checkInformation('employmentDetails', [
+                          'productCode',
+                          'accountType',
+                          'accountSubType'
+                          ]) && (selectedProductCode)
+                          ? "Complete"
+                          : "Pending"
+                          }}</nz-tag>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-md-4 d-flex">
+                        <span class="required-field">*</span>
+                        <nz-select nzShowSearch nzAllowClear nzPlaceHolder="Industry" [(ngModel)]="
+                                            createAccountForm.employmentDetails.lineOfActivity
+                                          ">
+                          <nz-option *ngFor="
+                                              let option of lineOfActivity
+                                            " [nzLabel]="option" [nzValue]="option"></nz-option>
+                        </nz-select>
+                      </div>
+                      <div class="col-md-4 d-flex">
+                        <span class="required-field">*</span>
+                        <nz-select nzShowSearch nzAllowClear nzPlaceHolder="Occupation" [(ngModel)]="
+                                            createAccountForm.employmentDetails.occupation
+                                          ">
+                          <nz-option *ngFor="
+                                              let option of occupation
+                                            " [nzLabel]="option" [nzValue]="option"></nz-option>
+                        </nz-select>
+                      </div>
+
+                      <div class="col-md-4 d-flex">
+                        <span class="required-field">*</span>
+                        <nz-select nzShowSearch nzAllowClear nzPlaceHolder="Type of Employment" [(ngModel)]="
+                                            createAccountForm.employmentDetails.typeOfEmployment
+                                          ">
+                          <nz-option *ngFor="
+                                              let option of typeOfEmployment
+                                            " [nzLabel]="option" [nzValue]="option"></nz-option>
+                        </nz-select>
+                      </div>
+                    </div>
+                    <div class="row mt-3">
+                      <div class="col-md-4 d-flex">
+                        <span class="required-field">*</span>
+                        <nz-input-number style="width: 100%;" nzMin="0" [nzPlaceHolder]="'Gross Income in USD'"
+                          type="text" nz-input [(ngModel)]="
+                                createAccountForm.employmentDetails.grossIncome
+                              " />
+                      </div>
+                      <!-- TODO change to calucation -> *12 and submit in background -->
+                      <div class="col-md-4 d-flex">
+                        <span class="required-field">*</span>
+                        <nz-input-number style="width: 100%;" nzMin="0" [nzPlaceHolder]="'Salary Range'" type="text"
+                          nz-input [(ngModel)]="
+                                createAccountForm.employmentDetails.annualIncomeSlab
+                              " />
+                      </div>
+                      <div class="col-md-4 d-flex">
+                        <span class="required-field">*</span>
+                        <input placeholder="Other Source of Income" type="text" nz-input [(ngModel)]="
+                                createAccountForm.employmentDetails.otherSourceOfIncome
+                              " />
+                      </div>
+                    </div>
+                    <div class="row mt-3">
+                      <div class="col-md-4 d-flex">
+                        <span class="required-field">*</span>
+                        <nz-select nzShowSearch nzAllowClear nzPlaceHolder="Source of Funds" [(ngModel)]="
+                                            createAccountForm.employmentDetails.sourceOfFunds
+                                          ">
+                          <nz-option *ngFor="
+                                              let option of sourceOfFunds
+                                            " [nzLabel]="option" [nzValue]="option"></nz-option>
+                        </nz-select>
+                      </div>
+                      <div class="col-md-4 d-flex">
+                        <span class="required-field">*</span>
+                        <nz-input-number style="width: 100%;" nzMin="0" [nzPlaceHolder]="'Dependents'" type="text"
+                          nz-input [(ngModel)]="
+                                createAccountForm.employmentDetails.dependents
+                              " />
+                      </div>
+                      <!-- <div class="col-md-4 d-flex">
+                          <span class="required-field">*</span>
+                          <nz-select
+                            nzShowSearch
+                            nzAllowClear
+                            nzPlaceHolder="New Current Account Currency"
+                            [(ngModel)]="
+                                            createAccountForm.employmentDetails.currency
+                                          "
+                          >
+                            <nz-option
+                              *ngFor="
+                                              let option of currency
+                                            "
+                              [nzLabel]="option"
+                              [nzValue]="option"
+                            ></nz-option>
+                          </nz-select>
+                        </div> -->
+                    </div>
+                    <div class="row mt-3">
+                      <div class="col-md-4 d-flex">
+                        <span class="required-field">*</span>
+                        <nz-select nzShowSearch nzAllowClear nzPlaceHolder="Account Type" [(ngModel)]="
+                                            selectedProductCode
+                                          ">
+                          <nz-option *ngFor="
+                                              let option of accountTypes
+                                            " [nzLabel]="option" [nzValue]="option"></nz-option>
+                        </nz-select>
+                      </div>
+                    </div>
+                  </div>
+                  }
+                  @if (current == 3) {
+                  <div>
+                    <div class="d-flex">
+                      <div>
+                        <nz-page-header nzTitle="File Uploads" nzSubtitle="Please upload the required documents">
+                        </nz-page-header>
+                      </div>
+                      <div class="d-flex align-items-center">
+                        <nz-tag [nzColor]="
+                                checkDocuments()
+                                  ? 'green'
+                                  : 'yellow'
+                              " [nzBordered]="false">{{
+                          checkDocuments()
+                          ? "Complete"
+                          : "Pending"
+                          }}</nz-tag>
+                      </div>
+                    </div>
+
+
+
+                    <div class="row">
+                      <div class="col-md-4 d-flex">
+                        <span class="required-field">*</span>
+                        <nz-upload nzType="drag" [nzMultiple]="false" [(nzFileList)]="idFileList"
+                          [nzBeforeUpload]="checkIdUploadFile">
+                          <p class="ant-upload-drag-icon">
+                            <span nz-icon>
+                              <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24">
+                                <rect width="24" height="24" fill="none" />
+                                <g fill="none" stroke="currentColor" stroke-width="1.5">
+                                  <circle cx="9" cy="9" r="2" />
+                                  <path d="M13 15c0 1.105 0 2-4 2s-4-.895-4-2s1.79-2 4-2s4 .895 4 2Z" />
+                                  <path
+                                    d="M2 12c0-3.771 0-5.657 1.172-6.828S6.229 4 10 4h4c3.771 0 5.657 0 6.828 1.172S22 8.229 22 12s0 5.657-1.172 6.828S17.771 20 14 20h-4c-3.771 0-5.657 0-6.828-1.172S2 15.771 2 12Z" />
+                                  <path stroke-linecap="round" d="M19 12h-4m4-3h-5m5 6h-3" />
+                                </g>
+                              </svg></span>
+                          </p>
+                          <p class="ant-upload-text">ID</p>
+                          <p class="ant-upload-hint">
+                            Upload a copy of your National ID. Please note that passports and drivers license will not
+                            be accepted
+                          </p>
+                        </nz-upload>
+                      </div>
+                      <div class="col-md-4 d-flex">
+                        <span class="required-field">*</span>
+                        <nz-upload nzType="drag" [nzMultiple]="false" [(nzFileList)]="proofOfResFileList"
+                          [nzBeforeUpload]="checkProofUploadFile">
+                          <p class="ant-upload-drag-icon">
+                            <span nz-icon>
+                              <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24">
+                                <rect width="24" height="24" fill="none" />
+                                <g fill="none" stroke="currentColor" stroke-width="1.5">
+                                  <path stroke-linecap="round"
+                                    d="M22 22H2m0-11l8.126-6.5a3 3 0 0 1 3.748 0L22 11m-6.5-5.5v-2A.5.5 0 0 1 16 3h2.5a.5.5 0 0 1 .5.5v5M4 22V9.5M20 22V9.5" />
+                                  <path
+                                    d="M15 22v-5c0-1.414 0-2.121-.44-2.56C14.122 14 13.415 14 12 14s-2.121 0-2.56.44C9 14.878 9 15.585 9 17v5m5-12.5a2 2 0 1 1-4 0a2 2 0 0 1 4 0Z" />
+                                </g>
+                              </svg></span>
+                          </p>
+                          <p class="ant-upload-text">Proof of Residence</p>
+                          <p class="ant-upload-hint">
+                            Upload a copy of a current utility bill, phone bill that has your name and physical address,
+                            rental invoice, affidavit if you are a tenant. All documents should not be older than three
+                            (3) months
+                          </p>
+                        </nz-upload>
+                      </div>
+                      <div class="col-md-4 d-flex"
+                        *ngIf="createAccountForm.employmentDetails.typeOfEmployment === 'Employed'">
+                        <span class="required-field">*</span>
+                        <nz-upload nzType="drag" [nzMultiple]="true" [(nzFileList)]="otherFileList"
+                          [nzBeforeUpload]="checkOtherUploadFile">
+                          <p class="ant-upload-drag-icon">
+                            <span nz-icon>
+                              <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24">
+                                <rect width="24" height="24" fill="none" />
+                                <path fill="currentColor" fill-rule="evenodd"
+                                  d="M10.944 1.25h2.112c1.838 0 3.294 0 4.433.153c1.172.158 2.121.49 2.87 1.238c.748.749 1.08 1.698 1.238 2.87c.153 1.14.153 2.595.153 4.433v4.112c0 1.838 0 3.294-.153 4.433c-.158 1.172-.49 2.121-1.238 2.87c-.749.748-1.698 1.08-2.87 1.238c-1.14.153-2.595.153-4.433.153h-2.112c-1.838 0-3.294 0-4.433-.153c-1.172-.158-2.121-.49-2.87-1.238c-.748-.749-1.08-1.698-1.238-2.87c-.153-1.14-.153-2.595-.153-4.433V9.944c0-1.838 0-3.294.153-4.433c.158-1.172.49-2.121 1.238-2.87c.749-.748 1.698-1.08 2.87-1.238c1.14-.153 2.595-.153 4.433-.153M6.71 2.89c-1.006.135-1.586.389-2.01.812c-.422.423-.676 1.003-.811 2.009c-.138 1.028-.14 2.382-.14 4.289v4c0 1.907.002 3.262.14 4.29c.135 1.005.389 1.585.812 2.008s1.003.677 2.009.812c1.028.138 2.382.14 4.289.14h2c1.907 0 3.262-.002 4.29-.14c1.005-.135 1.585-.389 2.008-.812s.677-1.003.812-2.009c.138-1.027.14-2.382.14-4.289v-4c0-1.907-.002-3.261-.14-4.29c-.135-1.005-.389-1.585-.812-2.008s-1.003-.677-2.009-.812c-1.027-.138-2.382-.14-4.289-.14h-2c-1.907 0-3.261.002-4.29.14M7.25 8A.75.75 0 0 1 8 7.25h8a.75.75 0 0 1 0 1.5H8A.75.75 0 0 1 7.25 8m0 4a.75.75 0 0 1 .75-.75h8a.75.75 0 0 1 0 1.5H8a.75.75 0 0 1-.75-.75m0 4a.75.75 0 0 1 .75-.75h5a.75.75 0 0 1 0 1.5H8a.75.75 0 0 1-.75-.75"
+                                  clip-rule="evenodd" />
+                              </svg></span>
+                          </p>
+                          <p class="ant-upload-text">Proof of Income</p>
+                          <p class="ant-upload-hint">
+                            Upload a copy of your current pay slip issued within the last three (3) months or
+                            confirmation of employment letter on company letterhead, trading license, proof of
+                            directorship, general contracts
+                          </p>
+                        </nz-upload>
+                      </div>
+                      <div class="row mt-3">
+                        <div class="col-md-4 d-flex">
+                          <span class="required-field">*</span>
+                          <nz-upload nzType="drag" [nzMultiple]="false" [(nzFileList)]="signatureFileList"
+                            [nzBeforeUpload]="checkSignatureUploadFile">
+                            <p class="ant-upload-drag-icon">
+                              <span nz-icon>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24">
+                                  <rect width="24" height="24" fill="none" />
+                                  <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                    stroke-width="1.5"
+                                    d="M22 12.634c-4 3.512-4.572-2.013-6.65-1.617c-2.35.447-3.85 5.428-2.35 5.428s-.5-5.945-2.5-3.89s-2.64 4.74-4.265 2.748C-1.5 5.813 5-1.15 8.163 3.457C10.165 6.373 6.5 16.977 2 22m7-1h10"
+                                    color="currentColor" />
+                                </svg></span>
+                            </p>
+                            <p class="ant-upload-text">Signature</p>
+                            <p class="ant-upload-hint">
+                              Upload a picture of your signature saved on a clear white sheet of paper
+                            </p>
+                          </nz-upload>
+                        </div>
+                        <div class="col-md-4 d-flex">
+                          <span class="required-field">*</span>
+                          <div class="d-flex flex-column">
+                            <div class="fas-upload-area" (click)="openFasModal()">
+                              <p class="ant-upload-drag-icon">
+                                <span nz-icon class="fas-upload-icon">
+                                  <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24">
+                                    <rect width="24" height="24" fill="none" />
+                                    <g fill="none" stroke="currentColor" stroke-width="1.5">
+                                      <circle cx="12" cy="9" r="3" />
+                                      <circle cx="12" cy="12" r="10" />
+                                      <path stroke-linecap="round"
+                                        d="M17.97 20c-.16-2.892-1.045-5-5.97-5s-5.81 2.108-5.97 5" />
+                                    </g>
+                                  </svg></span>
+                              </p>
+                              <p class="fas-ant-upload-text">Profile Photo</p>
+                              <p class="fas-ant-upload-hint">
+                                You are almost there! Please ensure you are in a room with good lighting to enable our
+                                liveness check to capture your image
+                              </p>
+                            </div>
+                            <div *ngIf="profilePhotoFileList.length > 0">
+                              <div class="ng-tns-c1985036304-18 ant-upload-list-text-container ng-star-inserted">
+                                <div nz-tooltip=""
+                                  class="ng-tns-c1985036304-18 ant-upload-list-item ant-upload-list-item- ant-upload-list-item-list-type-text ng-trigger ng-trigger-itemState"
+                                  ng-reflect-directive-title="">
+                                  <!--container--><!--container--><!--container--><!--container--><!--container--><!--container-->
+                                  <div class="ant-upload-list-item-info ng-tns-c1985036304-18"><span
+                                      class="ant-upload-span ng-tns-c1985036304-18"><!--bindings={
+                                    "ng-reflect-ng-switch-case": "uploading"
+                                  }--><!--bindings={
+                                    "ng-reflect-ng-switch-case": "thumbnail"
+                                  }-->
+                                      <div class="ant-upload-text-icon ng-tns-c1985036304-18 ng-star-inserted" style=""><!--bindings={
+                                    "ng-reflect-ng-switch-case": "picture"
+                                  }--><!--bindings={
+                                    "ng-reflect-ng-switch-case": "picture-card"
+                                  }--><span nz-icon=""
+                                          class="anticon ng-tns-c1985036304-18 anticon-paper-clip ng-star-inserted"
+                                          ng-reflect-nz-type="paper-clip"><svg viewBox="64 64 896 896" focusable="false"
+                                            fill="currentColor" width="1em" height="1em" class="ng-tns-c1985036304-18"
+                                            data-icon="paper-clip" aria-hidden="true">
+                                            <path
+                                              d="M779.3 196.6c-94.2-94.2-247.6-94.2-341.7 0l-261 260.8c-1.7 1.7-2.6 4-2.6 6.4s.9 4.7 2.6 6.4l36.9 36.9a9 9 0 0012.7 0l261-260.8c32.4-32.4 75.5-50.2 121.3-50.2s88.9 17.8 121.2 50.2c32.4 32.4 50.2 75.5 50.2 121.2 0 45.8-17.8 88.8-50.2 121.2l-266 265.9-43.1 43.1c-40.3 40.3-105.8 40.3-146.1 0-19.5-19.5-30.2-45.4-30.2-73s10.7-53.5 30.2-73l263.9-263.8c6.7-6.6 15.5-10.3 24.9-10.3h.1c9.4 0 18.1 3.7 24.7 10.3 6.7 6.7 10.3 15.5 10.3 24.9 0 9.3-3.7 18.1-10.3 24.7L372.4 653c-1.7 1.7-2.6 4-2.6 6.4s.9 4.7 2.6 6.4l36.9 36.9a9 9 0 0012.7 0l215.6-215.6c19.9-19.9 30.8-46.3 30.8-74.4s-11-54.6-30.8-74.4c-41.1-41.1-107.9-41-149 0L463 364 224.8 602.1A172.22 172.22 0 00174 724.8c0 46.3 18.1 89.8 50.8 122.5 33.9 33.8 78.3 50.7 122.7 50.7 44.4 0 88.8-16.9 122.6-50.7l309.2-309C824.8 492.7 850 432 850 367.5c.1-64.6-25.1-125.3-70.7-170.9z">
+                                            </path>
+                                          </svg></span><!--container--><!--ng-container--><!--ng-container--><!--bindings={
+                                    "ng-reflect-ng-if-else": "[object Object]"
+                                  }--><!--bindings={
+                                    "ng-reflect-ng-template-outlet-context": "[object Object]"
+                                  }--><!--container--><!--bindings={
+                                    "ng-reflect-ng-template-outlet-context": "[object Object]"
+                                  }--></div><!--container--><!--ng-container--><!--container--><!--bindings={
+                                    "ng-reflect-ng-template-outlet": "[object Object]"
+                                  }--><!--bindings={}--><span
+                                        class="ant-upload-list-item-name ng-tns-c1985036304-18 ng-star-inserted"
+                                        title="standard-issue (non-compliant) photo id card.jpeg" style="">
+                                        profile-photo-snap.jpeg </span><!--bindings={
+                                    "ng-reflect-ng-if": "true"
+                                  }--><span
+                                        class="ng-tns-c1985036304-18 ant-upload-list-item-card-actions ng-star-inserted"
+                                        style=""><!--bindings={
+                                    "ng-reflect-ng-if": "false"
+                                  }--><!--bindings={
+                                    "ng-reflect-ng-template-outlet": "[object Object]"
+                                  }--><button type="button" nz-button="" nztype="text" nzsize="small"
+                                          class="ant-btn ant-upload-list-item-card-actions-btn ng-tns-c1985036304-18 ant-btn-text ant-btn-sm ant-btn-icon-only ng-star-inserted"
+                                          ng-reflect-nz-type="text" ng-reflect-nz-size="small"
+                                          title="Remove file"><!--container--><span nz-icon="" nztype="delete"
+                                            ng-reflect-nz-type="delete" class="anticon anticon-delete"><svg
+                                              viewBox="64 64 896 896" focusable="false" fill="currentColor" width="1em"
+                                              height="1em" class="ng-tns-c1985036304-18" data-icon="delete"
+                                              aria-hidden="true">
+                                              <path
+                                                d="M360 184h-8c4.4 0 8-3.6 8-8v8h304v-8c0 4.4 3.6 8 8 8h-8v72h72v-80c0-35.3-28.7-64-64-64H352c-35.3 0-64 28.7-64 64v80h72v-72zm504 72H160c-17.7 0-32 14.3-32 32v32c0 4.4 3.6 8 8 8h60.4l24.7 523c1.6 34.1 29.8 61 63.9 61h454c34.2 0 62.3-26.8 63.9-61l24.7-523H888c4.4 0 8-3.6 8-8v-32c0-17.7-14.3-32-32-32zM731.3 840H292.7l-24.2-512h487l-24.2 512z">
+                                              </path>
+                                            </svg></span></button><!--bindings={
+                                    "ng-reflect-ng-if": "true"
+                                  }--><!--bindings={
+                                    "ng-reflect-ng-template-outlet": "[object Object]"
+                                  }--></span><!--bindings={
+                                    "ng-reflect-ng-if": "true"
+                                  }--><!--bindings={
+                                    "ng-reflect-ng-template-outlet": "[object Object]"
+                                  }--><!--bindings={
+                                    "ng-reflect-ng-template-outlet": "[object Object]"
+                                  }-->
+                                    </span></div><!--bindings={
+                                    "ng-reflect-ng-if": "false"
+                                  }--><!--bindings={
+                                    "ng-reflect-ng-if": "false"
+                                  }-->
+                                </div><!--container-->
+                              </div>
+                            </div>
+                          </div>
+
+
+                        </div>
+                      </div>
+                      <div class="row mt-3">
+                        <div class="col-md-4">
+                          <nz-upload nzType="drag" [nzMultiple]="false" [(nzFileList)]="payslipFileList"
+                            [nzBeforeUpload]="checkPayslipUploadFile">
+                            <p class="ant-upload-drag-icon">
+                              <span nz-icon>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="1.4em" height="1.4em"
+                                  viewBox="0 0 24 24">
+                                  <path fill="currentColor" fill-rule="evenodd"
+                                    d="M11.47 15.47a.75.75 0 0 1 1.06 0l2 2a.75.75 0 1 1-1.06 1.06l-.72-.72V22a.75.75 0 0 1-1.5 0v-4.19l-.72.72a.75.75 0 1 1-1.06-1.06z"
+                                    clip-rule="evenodd" />
+                                  <path fill="currentColor"
+                                    d="M12.476 3.75c-2.75 0-4.964 2.2-4.964 4.897c0 .462.065.909.185 1.331c.497.144.963.36 1.383.64a.75.75 0 1 1-.827 1.25a3.54 3.54 0 0 0-1.967-.589c-1.961 0-3.536 1.57-3.536 3.486s1.575 3.485 3.536 3.485a.75.75 0 0 1 0 1.5c-2.773 0-5.036-2.224-5.036-4.985c0-2.705 2.17-4.893 4.864-4.983a6.4 6.4 0 0 1-.102-1.135c0-3.541 2.902-6.397 6.464-6.397c3.158 0 5.796 2.244 6.355 5.221c2.3.977 3.919 3.238 3.919 5.882c0 3.074-2.188 5.631-5.093 6.253a.75.75 0 0 1-.314-1.467c2.24-.48 3.907-2.446 3.907-4.786c0-2.137-1.39-3.962-3.338-4.628a5 5 0 0 0-1.626-.27c-.583 0-1.14.1-1.658.28a.75.75 0 0 1-.494-1.416a6.5 6.5 0 0 1 3.024-.305a4.96 4.96 0 0 0-4.682-3.264" />
+                                </svg>
+                              </span>
+                            </p>
+                            <p class="ant-upload-text">Payslip</p>
+                            <p class="ant-upload-hint">
+                              Support for a single or bulk upload. Strictly prohibit
+                              from uploading company data or other band files
+                            </p>
+                          </nz-upload>
+                        </div>
+                        <div class="col-md-4">
+                          <nz-upload nzType="drag" [nzMultiple]="false" [(nzFileList)]="proofOfEmpFileList"
+                            [nzBeforeUpload]="checkEmploymentUploadFile">
+                            <p class="ant-upload-drag-icon">
+                              <span nz-icon>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="1.4em" height="1.4em"
+                                  viewBox="0 0 24 24">
+                                  <path fill="currentColor" fill-rule="evenodd"
+                                    d="M11.47 15.47a.75.75 0 0 1 1.06 0l2 2a.75.75 0 1 1-1.06 1.06l-.72-.72V22a.75.75 0 0 1-1.5 0v-4.19l-.72.72a.75.75 0 1 1-1.06-1.06z"
+                                    clip-rule="evenodd" />
+                                  <path fill="currentColor"
+                                    d="M12.476 3.75c-2.75 0-4.964 2.2-4.964 4.897c0 .462.065.909.185 1.331c.497.144.963.36 1.383.64a.75.75 0 1 1-.827 1.25a3.54 3.54 0 0 0-1.967-.589c-1.961 0-3.536 1.57-3.536 3.486s1.575 3.485 3.536 3.485a.75.75 0 0 1 0 1.5c-2.773 0-5.036-2.224-5.036-4.985c0-2.705 2.17-4.893 4.864-4.983a6.4 6.4 0 0 1-.102-1.135c0-3.541 2.902-6.397 6.464-6.397c3.158 0 5.796 2.244 6.355 5.221c2.3.977 3.919 3.238 3.919 5.882c0 3.074-2.188 5.631-5.093 6.253a.75.75 0 0 1-.314-1.467c2.24-.48 3.907-2.446 3.907-4.786c0-2.137-1.39-3.962-3.338-4.628a5 5 0 0 0-1.626-.27c-.583 0-1.14.1-1.658.28a.75.75 0 0 1-.494-1.416a6.5 6.5 0 0 1 3.024-.305a4.96 4.96 0 0 0-4.682-3.264" />
+                                </svg>
+                              </span>
+                            </p>
+                            <p class="ant-upload-text">Proof of Employment</p>
+                            <p class="ant-upload-hint">
+                              Support for a single or bulk upload. Strictly prohibit
+                              from uploading company data or other band files
+                            </p>
+                          </nz-upload>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  }
+                  @if (current == 4) {
+
+
+                  <div class="row">
+                    <div class="col-md-4 d-flex">
+                      <span class="required-field">*</span>
+                      <nz-select nzShowSearch nzAllowClear nzPlaceHolder="Bank" [(ngModel)]="selectedBank"
+                        (ngModelChange)="onSelectBank($event)">
+                        <nz-option *ngFor="let option of banks" [nzLabel]="option.name" [nzValue]="option"></nz-option>
+                      </nz-select>
+                    </div>
+
+                    <div class="col-md-4 d-flex flex-column">
+                      <nz-form-item>
+                        <input nz-input name="account_number" placeholder="Account Number"
+                          [(ngModel)]="createAccountForm.bank.account_number" />
+                      </nz-form-item>
+                      <div style="font-size: 12px;color: rgba(0, 0, 0, 0.45);font-style: italic;margin-top: -20px;">
+                        Account Number
+                      </div>
+                    </div>
+                  </div>
+
+
+
+                  <div>
+                    <div class="row mt-3">
+                      <div class="col-md-4 d-flex">
+                        <span class="required-field">*</span>
+                        <nz-select nzShowSearch nzAllowClear nzPlaceHolder="Product"
+                          [(ngModel)]="createAccountForm.loan.product">
+                          <nz-option *ngFor="let option of products" [nzLabel]="option.type"
+                            [nzValue]="option"></nz-option>
+                        </nz-select>
+                      </div>
+
+                      <div class="col-md-4 d-flex flex-column">
+                        <nz-form-item>
+                          <nz-input-number name="amount" [(ngModel)]="createAccountForm.loan.amount" nzMin="1" />
+                        </nz-form-item>
+                        <div style="font-size: 12px;color: rgba(0, 0, 0, 0.45);font-style: italic;margin-top: -20px">
+                          Amount
+                        </div>
+                        <div style="font-size: 12px;color: rgb(255, 71, 87);font-style: italic;">
+                          Loan amount should not exceed 3500
+                        </div>
+                      </div>
+
+                      <!-- <div class="col-md-4 d-flex flex-column">
+                            <nz-date-picker
+                              [nzDisabledDate]="disabledLoanDate"
+                              nzFormat="yyyy/MM/dd"
+                              [(ngModel)]="
+                                          createAccountForm.loan.next_repayment_date
+                                        "
+                            ></nz-date-picker>
+                            <div style="font-size: 12px;color: rgba(0, 0, 0, 0.45);font-style: italic;">
+                              Next Salary Date
+                            </div>
+                          </div> -->
+
+                      <div class="col-md-4 d-flex">
+                        <span class="required-field">*</span>
+                        <nz-select nzShowSearch nzAllowClear nzPlaceHolder="Type"
+                          [(ngModel)]="createAccountForm.loan.type">
+                          <nz-option *ngFor="let option of ssbTypes" [nzLabel]="option" [nzValue]="option"></nz-option>
+                        </nz-select>
+                      </div>
+
+                      <div class="col-md-4 d-flex flex-column">
+                        <nz-form-item>
+                          <input nz-input name="ssb_reference" [(ngModel)]="createAccountForm.loan.ssb_reference" />
+                        </nz-form-item>
+                        <div style="font-size: 12px;color: rgba(0, 0, 0, 0.45);font-style: italic;margin-top: -20px">
+                          Employee Number
+                        </div>
+                        <div *ngIf="createAccountForm.loan.ssb_reference && !isValidSsbReference(createAccountForm.loan.ssb_reference)" style="font-size: 12px;color: rgb(255, 71, 87);font-style: italic;">
+                          Must be 7 digits followed by 1 letter
+                        </div>
+                      </div>
+
+
+                    </div>
+
+
+
+
+
+                    <div class="row mt-3">
+                      <div class="col-md-4">
+                        <nz-form-item>
+                          <nz-select name="loanPurpose" [(ngModel)]="createAccountForm.loan.loanPurpose"
+                            nzPlaceHolder="Select your loan purpose">
+                            <nz-option [nzValue]="option.key" [nzLabel]="option.value"
+                              *ngFor="let option of fcbFields.loan_purpose"></nz-option>
+                          </nz-select>
+                        </nz-form-item>
+                      </div>
+                      <div class="col-md-4">
+                        <nz-form-item>
+                          <nz-select name="employerIndustry" [(ngModel)]="createAccountForm.loan.employerIndustry"
+                            nzPlaceHolder="Select your employer industry">
+                            <nz-option [nzValue]="option.key" [nzLabel]="option.value"
+                              *ngFor="let option of fcbFields.employer_industry"></nz-option>
+                          </nz-select>
+                        </nz-form-item>
+                      </div>
+                      <div class="col-md-4">
+                        <nz-form-item>
+                          <nz-select name="propertyDensity" [(ngModel)]="createAccountForm.loan.propertyDensity"
+                            nzPlaceHolder="Select your property density">
+                            <nz-option [nzValue]="option.key" [nzLabel]="option.value"
+                              *ngFor="let option of fcbFields.property_density"></nz-option>
+                          </nz-select>
+                        </nz-form-item>
+                      </div>
+                      <div class="col-md-4">
+                        <nz-form-item>
+                          <nz-select name="propertyOwnership" [(ngModel)]="createAccountForm.loan.propertyOwnership"
+                            nzPlaceHolder="Select your property ownership type">
+                            <nz-option [nzValue]="option.key" [nzLabel]="option.value"
+                              *ngFor="let option of fcbFields.property_ownership"></nz-option>
+                          </nz-select>
+                        </nz-form-item>
+                      </div>
+                      <div class="col-md-4">
+                        <nz-form-item>
+                          <nz-select name="maritalStatus" [(ngModel)]="createAccountForm.loan.maritalStatus"
+                            nzPlaceHolder="Select marital status">
+                            <nz-option [nzValue]="option.key" [nzLabel]="option.value"
+                              *ngFor="let option of fcbFields.marital_status"></nz-option>
+                          </nz-select>
+                        </nz-form-item>
+                      </div>
+                      <div class="col-md-4">
+                        <nz-form-item>
+                          <nz-select name="occupationClass" [(ngModel)]="createAccountForm.loan.occupationClass"
+                            nzPlaceHolder="Select your occupation class">
+                            <nz-option [nzValue]="option.key" [nzLabel]="option.value"
+                              *ngFor="let option of fcbFields.occupation_class"></nz-option>
+                          </nz-select>
+                        </nz-form-item>
+                      </div>
+                      <div class="col-md-4">
+                        <nz-form-item>
+                          <nz-select name="salaryRange" [(ngModel)]="createAccountForm.loan.salaryRange"
+                            nzPlaceHolder="Select your salary range">
+                            <nz-option [nzValue]="option.key" [nzLabel]="option.value"
+                              *ngFor="let option of fcbFields.salary"></nz-option>
+                          </nz-select>
+                        </nz-form-item>
+                      </div>
+                      <div class="col-md-4">
+                        <nz-form-item>
+                          <input name="employer" nz-input [(ngModel)]="createAccountForm.loan.employer"
+                            placeholder="Employer" />
+                        </nz-form-item>
+                      </div>
+                    </div>
+
+                  </div>
+
+
+                  }
+                  @if (current ==5) {
+                  <div class="disclaimer">
+                    <h5 style="font-weight: 900;">Declaration of Accuracy of Information</h5>
+                    <p>By submitting this form, I declare that the information in this application is accurate. I
+                      acknowledge that providing misleading or untrue information may lead to my application being
+                      rejected.</p>
+
+
+                  </div>
+
+                  }
+                </div>
+                <div>
+                  <div class="steps-action row" style="padding: 10px 0">
+                    <div class="col d-flex justify-content-start">
+                      <afc-button [label]="'Previous'" [disableButton]="!(current > 0)" [loading]="false"
+                        (buttonClick)="pre()" [style]="'cancel'" [size]="'sm'" />
+                    </div>
+                    <div class="col d-flex justify-content-end">
+                      <afc-button nz-tooltip [nzTooltipTitle]="
+                          (current == 0 && !checkInformation('personalInformation', ['middleName']) ? 'Please enter the required Personal Information' : '') ||
+                          (current == 1 && !checkInformation('contactDetails', ['emailAddress', 'preferSms', 'useAsPermanentAddress', 'preferredMethodOfContact', 'allowSmsAlerts'])? 'Please enter the required Contact Information' : '') ||
+                          (current == 2 && !checkInformation('employmentDetails', ['productCode', 'accountType', 'accountSubType'])? 'Please enter the required Information' : '') ||
+                          (current == 3 && !checkDocuments()? 'Please upload the required documents' : '') ||
+                          (current == 4 && !isLoanStepValid() ? getLoanStepTooltip() : '')
+                          " *ngIf="current < 5" [label]="'Next'" [disableButton]="(
+                            current == 0 && !checkInformation('personalInformation', ['middleName']) ||
+                            current == 1 && !checkInformation('contactDetails', ['emailAddress', 'preferSms', 'useAsPermanentAddress', 'preferredMethodOfContact', 'allowSmsAlerts']) ||
+                            current == 2 && !checkInformation('employmentDetails', ['productCode', 'accountType', 'accountSubType']) ||
+                            current == 2 && !(selectedProductCode) ||
+                            current == 3 && !checkDocuments() ||
+                            current == 4 && !isLoanStepValid()
+                            )" [loading]="false" (buttonClick)="next()" [style]="'cancel'" [size]="'sm'" />
+
+                      <!-- <afc-button
+                                                nz-tooltip [nzTooltipTitle]="(current == 0 && !checkInformation('personalInformation', ['middleName']) ? 'Please enter the required Personal Information' : '') || (current == 1 && !checkInformation('contactDetails', ['preferSms', 'useAsPermanentAddress', 'preferredMethodOfContact', 'allowSmsAlerts'])? 'Please enter the required Contact Information' : '')"
+                                                *ngIf="current < 5"
+                                                [label]="'Next'"
+                                                [disableButton]="false"
+                                                [loading]="false"
+                                                (buttonClick)="next()"
+                                                [style]="'cancel'"
+                                                [size]="'sm'"
+                                              /> -->
+
+                      <afc-button nz-tooltip
+                        [nzTooltipTitle]="(!isAcknowledged) ? 'You can only proceed by acknowledging the disclaimer' : ''"
+                        *ngIf="current === 5" [label]="'Submit'" [disableButton]="!isAcknowledged"
+                        [loading]="createAccountLoader" (buttonClick)="done()" [style]="'primary'" [size]="'sm'" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+
+
+            </div>
+          </div>
+
+        </div>
+      </div>
+      <!-- [disableButton]="current == 0 && !checkPersonalInformation()" -->
+    </div>
+  </div>
+</div>
+
+
+<nz-modal [(nzVisible)]="isVisible" [nzTitle]="modalTitle" [nzContent]="modalContent" [nzFooter]="modalFooter"
+  (nzOnCancel)="handleCancel()">
+  <ng-template #modalTitle></ng-template>
+
+  <ng-template #modalContent>
+    <div class="documents-notice">
+      <h3>Let’s Get Your Current Account Set Up!</h3>
+      <p>To open an AFC Commercial Bank Current account, please ensure you have the following documents ready for
+        upload:</p>
+      <ul>
+        <li>Your National Identity Card (passport and drivers’ license are not accepted)</li>
+        <li>Proof of residence (current utility bill, phone bill that has your name and physical address, rental
+          invoice, affidavit if you are a tenant. All documents should not be older than three (3) months)</li>
+        <li>Proof of income (current pay slip issued within the last three (3) months or confirmation of employment
+          letter on company letterhead, trading license, proof of directorship, general contracts)</li>
+        <li>Signature (Sign on a clear white sheet of paper and take a picture)</li>
+      </ul>
+      <!-- <p>
+        The fields marked with an asterisk (<span style="color: rgb(255, 71, 87);font-family: 'Space Mono', monospace; font-size: 20px;">*</span>) are required. Please ensure all required fields are completed before submitting.
+      </p> -->
+      <p>The application process will include a liveness check, where a picture of your face will be taken for
+        verification purposes. Kindly ensure that you are in a well-lit room when completing the application.</p>
+      <p>Should you require any assistance, please contact us on
+        <b>customersupport<span>{{'@'}}</span>afcholdings.co.zw</b>.</p>
+      <p>We look forward to welcoming you into the AFC Commercial Bank family!</p>
+    </div>
+
+    <div class="mt-3">
+      Read the <a class="t-c-click" target="_blank" rel="noopener noreferrer"
+        href="https://www.afcholdings.co.zw/afc-loans-terms-conditions/"
+        style="color: rgb(127, 191, 51)!important;">Loan Application Terms and Conditions</a>
+    </div>
+
+    <div class="mt-3">
+      <label nz-checkbox [(ngModel)]="isTCAcknowledged">I have read and agree to the</label> <span class="t-c-click"
+        (click)="open()">Terms and Conditions</span>
+    </div>
+
+
+
+    <div class="mt-3">
+      <afc-button nz-tooltip
+        [nzTooltipTitle]="!isTCAcknowledged ? 'You need to accept the terms and conditions to continue' : ''"
+        [label]="'Start'" [disableButton]="!isTCAcknowledged" [loading]="false" (buttonClick)="beginAccOpeningProcess()"
+        [style]="'gradient'" [size]="'sm'" />
+    </div>
+
+  </ng-template>
+
+  <ng-template #modalFooter></ng-template>
+</nz-modal>
+
+
+<nz-modal [(nzVisible)]="isDoneVisible" [nzTitle]="modalDoneTitle" [nzContent]="modalDoneContent"
+  [nzFooter]="modalDoneFooter" (nzOnCancel)="handleDoneCancel()">
+  <ng-template #modalDoneTitle></ng-template>
+
+  <ng-template #modalDoneContent>
+    <div style="text-align: center">
+      Your application has been submitted for processing. <br />
+      Your ticket number is:
+      <br />
+      <span style="font-size: 20px">{{savedTicketNumber}}</span>
+      <p>You will receive an SMS with your new Current Account Number once your application has been processed. </p>
+    </div>
+  </ng-template>
+
+  <ng-template #modalDoneFooter> </ng-template>
+</nz-modal>
+
+<nz-modal [(nzVisible)]="isFasVisible" [nzTitle]="modalFasTitle" [nzContent]="modalFasContent"
+  [nzFooter]="modalFasFooter" (nzOnCancel)="handleFasCancel()" nzMaskClosable="false">
+  <ng-template #modalFasTitle></ng-template>
+
+  <ng-template #modalFasContent>
+    <app-profile-photo-snap (photoCaptured)="updateProfilePhotoFileList($event)"
+      (captureComplete)="finishProfilePhotoCapture()"></app-profile-photo-snap>
+  </ng-template>
+
+  <ng-template #modalFasFooter> </ng-template>
+</nz-modal>
+
+<nz-modal [(nzVisible)]="isAgeVisible" [nzTitle]="modalAgeTitle" [nzContent]="modalAgeContent"
+  [nzFooter]="modalAgeFooter" (nzOnCancel)="handleAgeCancel()">
+  <ng-template #modalAgeTitle></ng-template>
+
+  <ng-template #modalAgeContent>
+    <div class="d-flex justify-content-center">
+      <h3>Oh No!</h3>
+    </div>
+    <div class="d-flex justify-content-center">
+      <img src="/assets/images/illustrations/age-limit.svg" alt="" style="max-width: 300px;">
+    </div>
+    <div class="d-flex justify-content-center" style="text-align: center;font-size: 18px;color: #989898;">
+      <p>Sorry, you must be 18 years or older to open an account with us.</p>
+    </div>
+    <div class="mt-3 d-flex justify-content-center">
+      <afc-button (click)="handleLeaveCancel()" [label]="'Leave'" [loading]="false" [style]="'gradient'"
+        [size]="'sm'" />
+    </div>
+  </ng-template>
+
+  <ng-template #modalAgeFooter>
+
+  </ng-template>
+</nz-modal>
+
+
+<nz-modal [(nzVisible)]="isLeaveVisible" [nzTitle]="modalLeaveTitle" [nzContent]="modalLeaveContent"
+  [nzFooter]="modalLeaveFooter" (nzOnCancel)="handleLeaveCancel()">
+  <ng-template #modalLeaveTitle></ng-template>
+
+  <ng-template #modalLeaveContent>
+    <div class="d-flex justify-content-center">
+      <h3>Oh No!</h3>
+    </div>
+    <div class="d-flex justify-content-center">
+      <img src="/assets/images/illustrations/sad-modal.svg" alt="" style="max-width: 300px;">
+    </div>
+    <div class="d-flex justify-content-center" style="text-align: center;font-size: 18px;color: #989898;">
+      <p>We hate to see you leave. Please get in touch and let us know how we can assist.</p>
+    </div>
+    <div class="mt-3 d-flex justify-content-center">
+      <afc-button (click)="handleLeaveCancel()" [label]="'Leave'" [loading]="false" [style]="'gradient'"
+        [size]="'sm'" />
+    </div>
+  </ng-template>
+
+  <ng-template #modalLeaveFooter>
+
+  </ng-template>
+</nz-modal>
+
+
+<nz-drawer [nzSize]="drawerSize" (nzOnClose)="close()" [nzVisible]="tcVisible" nzPlacement="right"
+  nzTitle="Terms and Conditions" (nzOnClose)="close()">
+  <ng-container *nzDrawerContent>
+    <div class="mb-3">
+      <button nz-button nzType="primary" (click)="generatePDF()">
+        <span nz-icon nzType="file-pdf"></span>
+        Print
+      </button>
+    </div>
+    <div class="terms-and-conditions" id="terms-and-conditions" style="padding: 20px;">
+      <h4>AFC Commercial Bank Account Opening Terms and Conditions</h4>
+      <h5>Declaration by Account Applicant</h5>
+      <p>I/We certify that the information given in support of this application is true and correct and I/We understand
+        that in the event of any information provided being inaccurate, the Bank reserves the right to decline this
+        application without giving reasons thereof. I/We agree to be liable for any overdraft or debt which the bank may
+        permit on this account or any other accounts in my/our name (s). I/We understand and agree to abide by the
+        bank’s minimum balance requirements and accept the right of the bank to compulsorily close my/our account
+        without warning if the account is not conducted satisfactorily. I/We understand that any erroneous claim that
+        appears on a bank Statement must be made in writing 30 days of date of such a statement. I/We agree that I/We
+        have read, understood and accept the terms and conditions of the account and agree to be bound by them.</p>
+      <h4>TERMS AND CONDITIONS</h4>
+      <h5>AFC COMMERCIAL BANK Account</h5>
+      <ol>
+        <li>Monthly maintenance fees may vary depending on the type of account.</li>
+        <li>All transactions may be subject to transaction fees and charges as published in our business conditions
+          periodically.</li>
+        <li>You may be requested by the Bank to update your KYC information as and when necessary.</li>
+        <li>The Bank may make enquiries about your financial position and credit record from third party credit bureaus.
+        </li>
+        <li>Customers can exercise their rights to be informed, and to access their information, complain, and object to
+          processing of their information, correction, erasure and withdraw consent regarding processing of their
+          personally identifiable information, within the confines of Zimbabwean laws. All requests must be made in
+          writing.</li>
+        <li>The Bank reserves the right to close your account/s due to inactivity, illegal conduct or non-compliance
+          with the Terms and Conditions of this account.</li>
+      </ol>
+      <h5>AFC COMMERCIAL BANK ATM Card</h5>
+      <p>I agree to the following conditions:</p>
+      <ol>
+        <li>I/ We agree to use the card subject to the maximum limit set by the bank.</li>
+        <li>I/We authorise the bank to debit from my account unspecified amounts due to the bank each day in full
+          payment of all indebtness </li>
+        <li>The bank reserves the right to withdraw / cancel or refuse any Card transaction without giving prior notice.
+        </li>
+        <li>In the event of Card being lost / stolen, I will notify the bank immediately and shall not make the bank
+          liable for any loss made thereof.</li>
+        <li>The Card remains the property of the bank and shall use it specifically for the intended purpose as set out
+          by the Bank.</li>
+      </ol>
+      <h5>AFC COMMERCIAL BANK SMS Alert</h5>
+      <ol>
+        <li>The instruction and / or procedures of the Bank shall bind the client.</li>
+        <li>While AFC Commercial Bank will take due care to make this service available at all times but in the unlikely
+          event of any reasons which are beyond the Bank’s control, including but not limited to any technical
+          difficulty, which results in outage of the services and / or loss of any transmission of messages, AFC
+          Commercial Bank shall not liable.</li>
+        <li>The client hereby irrevocably agrees to hold free and harmless the Bank and indemnify the Bank against all
+          actions, claims, damages, liabilities, losses, , costs and expenses of whatever nature that may result due to
+          the Bank providing the services and in actioning any instructions from the regulator or statutory bodies.</li>
+        <li>The Client hereby indemnifies the Bank from any liability including claims for damages that may arise in the
+          event that the Bank erroneously communicates with client with regard to any credit or debits on client’s
+          accounts.</li>
+        <li>AFC Commercial Bank will transmit the SMS Alerts notifications on time to the Service Provider but delivery
+          of the data to the Subscriber’s equipment depends on the Service Provider locally and abroad and the Bank
+          cannot be held responsible for non-receipt or erroneous data received or receipt of the messages at odd times
+          and the consequences arising there from.</li>
+        <li>AFC Commercial Bank is not liable for any breach of confidentiality of any data/ information sent to the
+          Subscriber’s equipment. The client acknowledges that he / she is solely responsible for protecting his/her
+          mobile phone/ device and privacy.</li>
+        <li>In case of change / disconnection/ loss of Client’s mobile phone number (s) or equipment, the Client
+          undertakes to notify the Bank in writing immediately of such instance to protect the interest of all parties.
+          The Subscriber shall indemnify the Bank for all loss or damage on account of Client’s failure to notify the
+          Bank of the change / disconnection of Subscriber’s mobile phone number (s).</li>
+        <li>The Bank has the right to withdraw any or all of the facilities under the service, without reason, at any
+          time after serving a notice to the Subscriber by ordinary post or via message to the Client’s equipment.</li>
+      </ol>
+
+      <h4>AFC Commercial Bank Internet Banking</h4>
+      <h5>i. Definitions</h5>
+      <p>In these terms and conditions:</p>
+      <p><b>“Account”</b> means any account by the Bank in the name of an Internet Banking Customer on which the
+        customer is authorised to operate through the Internet Banking Facility.</p>
+      <p><b>“Internet Banking Facility”</b> means banking delivery channel that uses Internet technology.</p>
+      <p>Internet Banking Customer” means an AFC Commercial Bank customer who has authorised the Bank to accept
+        Internet-based transactions by the said customer’s accounts and <b>”We”</b>, <b>“I”</b> and <b>“our”</b> denote
+        such customer.</p>
+      <p><b>“The Bank”</b> means AFC Commercial Bank</p>
+
+      <h5>ii. Copyright and trademarks</h5>
+      <p>Except as otherwise expressly stated herein, the copyright and all other intellectual property rights in the
+        contents of the website, including but not limited to all design, text, sound recordings, images or links, are
+        the property of the Bank and, as such they may not be reproduced, transmitted, published, performed, broadcast,
+        stored, adapted, distributed, displayed, licensed, altered, hyperlinked or otherwise used in whole or in part in
+        any manner without prior written consent of the Bank.</p>
+
+      <h5>iii. Deed use of Internet Banking</h5>
+      <p>I / We agree that all instructions issued by me/ us to the Bank shall be deemed irrevocable and any alleged
+        fraudulent instructions shall be deemed to be my responsibility unless negligence on the part of the Bank is
+        proved.</p>
+
+      <h5>iv. Indemnity</h5>
+      <p>We hereby indemnify and hold the Bank harmless against all damages, losses, expenses and costs, including legal
+        costs, suffered or incurred by the Bank in connection with or arising from:</p>
+      <ol>
+        <li>Our/ my access to the website and / or use the online services: or</li>
+        <li>Any other party’s access to the website and / or use of the online services using my/our USER ID and / or
+          login password, or.</li>
+        <li>Our / my breach of any of these terms and conditions of access where any party was able to access the
+          website and / or use the online services by using our / my USER ID and / or login password.</li>
+      </ol>
+      <h5>v. Time Frames</h5>
+      <p>I / We acknowledge that transactions that use the Real Time Gross Settlement (RTGS) form of settlement must be
+        done and authorised before 11.00 hours so as to ensure a smooth flow in transmission on the RTGS platform.</p>
+      <h5>vi. Payment of bills</h5>
+      <p>All instructions for the payment of bills should be effected at least 2 working days before their due dates so
+        as to allow a smooth flow in transmission to their intended payees.</p>
+      <h5>vii. Charges</h5>
+      <p>Charges imposed by the Bank from time to time shall be payable by the Internet Banking Customer for the
+        provision of the Internet Banking Facility, whether or not the Internet Banking Facility is being used during
+        the period concerned.</p>
+      <h5>viii. Termination of facility by Bank</h5>
+      <p>We acknowledge further that the Bank may terminate our / my access to the website and / or our use of the
+        online services at any time without notice and without assigning any reason therefore.</p>
+
+    </div>
+  </ng-container>
+</nz-drawer>

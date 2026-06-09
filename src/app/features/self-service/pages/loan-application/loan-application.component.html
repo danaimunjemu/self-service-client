@@ -1,151 +1,13 @@
     <div class="mt-5">
-      @if(isGuarantor) {
-        <div class="steps-action d-flex">
-          <div class="steps-content flex-grow-1">
-            <div class="form-container h-100">
-              <div class="container h-100">
-                <div class="form">
-                  @if (isGuarantorLoggedIn){
-                    <div class="row">
-                      <div class="col-md-6">
-                        <input
-                            type="text"
-                            nz-input
-                            placeholder="Enter Your ID Number"
-                            [(ngModel)]="
-                              getLoanByRefRequest.idNumber
-                            "
-                          />
-                      </div>
-                      <div class="col-md-6">
-                        <div>
-                              
-                          <nz-input-group
-                          nzSearch
-                          [nzAddOnAfter]="suffixIconButton"
-                        >
-                          <input
-                            type="text"
-                            nz-input
-                            placeholder="Enter the OTP Reference"
-                            [(ngModel)]="
-                              getLoanByRefRequest.otpReference
-                            "
-                          />
-                        </nz-input-group>
-                        <ng-template #suffixIconButton>
-                          <button
-                          [nzLoading]="getLoanByRefLoader"
-                            nz-button
-                            nzType="primary"
-                            nzSearch
-                            (click)="getLoanByRef()"
-                            [disabled]="
-                              getLoanByRefRequest.idNumber == '' || getLoanByRefRequest.otpReference == ''
-                            "
-                          >
-                            Submit
-                            <span nz-icon nzType="sync"></span>
-                          </button>
-                        </ng-template>
-                        </div>
-                      </div>
-                    </div>
-                    @if (loanByRefRetreived) {
-                      <div class="row">
-                        <div class="col-md-6">
-                          <nz-form-item>
-                            <input name="OTP" nz-input [(ngModel)]="guarantorConfirmationForm.otpReference" placeholder="OTP" />
-                      </nz-form-item>
-                        </div>
-                      </div>
-                      <div class="row mt-3">
-                        <div class="col-md-6">
-                          <label
-                          nz-checkbox
-                          [(ngModel)]="guarantorConfirmationForm.approve"
-                          >I agree to the </label
-                        > <span class="t-c-click" (click)="open()">Terms and Conditions</span>
-                        </div>
-                      </div>
-                      <div class="mt-3">
-                        <afc-button
-                        nz-popconfirm
-        nzPopconfirmTitle="Are you sure you want to submit this information?"
-        nzPopconfirmPlacement="bottom"
-        (nzOnConfirm)="validateGuarantor()"
-                              
-                                [label]="'Submit'"
-                                [disableButton]="false"
-                                [loading]="guarantorConfirmationLoader"
-                                [style]="'primary'"
-                                [size]="'sm'"
-                              />
-                        </div>
-                    }
-                    
-                  }
-                  @if (!isGuarantorLoggedIn){
-                    <div class="d-flex justify-content-center">
-                      <div class="disclaimer">
-                        <div class="documents-notice">
-                          <h3>Guarantor Details</h3>
-                          <p>To open an AFC Commercial Bank Current account, please ensure you have the following documents ready for upload:</p>
-                          <ul>
-                            <li>Your National Identity Card (passport and drivers’ license are not accepted)</li>
-                            <li>Proof of residence (current utility bill, phone bill that has your name and physical address, rental invoice, affidavit if you are a tenant. All documents should not be older than three (3) months)</li>
-                            <li>Proof of income (current pay slip issued within the last three (3) months or confirmation of employment letter on company letterhead, trading license, proof of directorship, general contracts)</li>
-                            <li>Signature (Sign on a clear white sheet of paper and take a picture)</li>
-                          </ul>
-                          <!-- <p>
-                            The fields marked with an asterisk (<span style="color: rgb(255, 71, 87);font-family: 'Space Mono', monospace; font-size: 20px;">*</span>) are required. Please ensure all required fields are completed before submitting.
-                          </p> -->
-                          <p>The application process will include a liveness check, where a picture of your face will be taken for verification purposes. Kindly ensure that you are in a well-lit room when completing the application.</p>
-                          <p>Should you require any assistance, please contact us on <b>customersupport<span>{{'@'}}</span>afcholdings.co.zw</b>.</p>
-                        </div>
-                
-                        <div class="mt-3">
-                          <label
-                                                nz-checkbox
-                                                [(ngModel)]="guarantorAcknowledgement"
-                                                >I have read and agree to the</label
-                                              > <span class="t-c-click" (click)="open()">Terms and Conditions</span>
-                        </div>
-
-                        <div class="mt-3">
-                          <afc-button
-                            nz-tooltip [nzTooltipTitle]="(!guarantorAcknowledgement) ? 'You have to acknowledge the terms and conditions' : ''"
-                              [label]="'Proceed'"
-                              [disableButton]="(!guarantorAcknowledgement)"
-                              [loading]="false"
-                              (buttonClick)="proceedToGuarantorLogin()"
-                              [style]="'primary'"
-                              [size]="'sm'"
-                            />
-                        </div>
-                         
-                          
-                          
-                      </div>
-                  </div>
-                  }
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      }
       @if(!isGuarantor) {
         <div class="container">
           <nz-steps [nzCurrent]="current">
             <nz-step nzTitle="Disclaimer"></nz-step>
             <nz-step nzTitle="Loan Application"></nz-step>
-            <nz-step nzTitle="Guarantor Details"></nz-step>
-            <nz-step nzTitle="Credit Vetting"></nz-step>
             <nz-step nzTitle="Confirmation"></nz-step>
           </nz-steps>
         </div>
-    
+
         <div>
           <div class="steps-action d-flex">
             <div class="steps-content flex-grow-1">
@@ -158,95 +20,33 @@
                           <div class="d-flex justify-content-center">
                               <div class="disclaimer">
                                 <div class="documents-notice">
-                                  <h3>Let’s Get Your Current Account Set Up!</h3>
-                                  <p>To open an AFC Commercial Bank Current account, please ensure you have the following documents ready for upload:</p>
+                                  <h3>Start the Loan Application Process</h3>
+                                  <p>To apply for a loan with AFC Commercial Bank, please ensure you have the following documents ready for upload:</p>
                                   <ul>
-                                    <li>Your National Identity Card (passport and drivers’ license are not accepted)</li>
-                                    <li>Proof of residence (current utility bill, phone bill that has your name and physical address, rental invoice, affidavit if you are a tenant. All documents should not be older than three (3) months)</li>
-                                    <li>Proof of income (current pay slip issued within the last three (3) months or confirmation of employment letter on company letterhead, trading license, proof of directorship, general contracts)</li>
-                                    <li>Signature (Sign on a clear white sheet of paper and take a picture)</li>
+                                    <li>Your Payslip (issued within the last three (3) months)</li>
+                                    <li>Proof of employment</li>
                                   </ul>
                                   <!-- <p>
                                     The fields marked with an asterisk (<span style="color: rgb(255, 71, 87);font-family: 'Space Mono', monospace; font-size: 20px;">*</span>) are required. Please ensure all required fields are completed before submitting.
                                   </p> -->
-                                  <p>The application process will include a liveness check, where a picture of your face will be taken for verification purposes. Kindly ensure that you are in a well-lit room when completing the application.</p>
                                   <p>Should you require any assistance, please contact us on <b>customersupport<span>{{'@'}}</span>afcholdings.co.zw</b>.</p>
                                 </div>
-                        
+
                                 <div class="mt-3">
                                   <label
                                                         nz-checkbox
                                                         [(ngModel)]="isAcknowledged"
                                                         >I have read and agree to the</label
-                                                      > <span class="t-c-click" (click)="open()">Terms and Conditions</span>
+                                                      >
+<!--                                  <span class="t-c-click" (click)="open()">Terms and Conditions</span>-->
+                                  <a class="t-c-click" target="_blank" rel="noopener noreferrer" href="https://www.afcholdings.co.zw/afc-loans-terms-conditions/">Terms and Conditions</a>
                                 </div>
-                                 
-                                  
-                                  
+
+
+
                               </div>
                           </div>
                         }
-                        <!-- @if (current == 1) {
-                          <div>
-                            <div class="row">
-                              <div class="col-md-4"></div>
-                              <div class="col-md-4">
-                                <form nz-form class="login-form">
-                                  <nz-form-item>
-                                    <nz-form-control nzErrorTip="Please input your username!">
-                                      <nz-input-group nzPrefixIcon="user">
-                                        <input nz-input name="username" [(ngModel)]="loginForm.username" placeholder="Phone Number" />
-                                      </nz-input-group>
-                                    </nz-form-control>
-                                  </nz-form-item>
-                                  <nz-form-item>
-                                    <nz-form-control nzErrorTip="Please input your Password!">
-                                        <div class="d-flex">
-                                          <nz-input-group nzPrefixIcon="lock">
-                                          <input name="pin" type="password" nz-input [(ngModel)]="loginForm.password" placeholder="PIN" />
-                                        </nz-input-group>
-                                        
-                                        </div>
-                                        
-                                    </nz-form-control>
-                                  </nz-form-item>
-                                  <div class="mt-3 d-flex justify-content-center" *ngIf="!otpIsVisible">
-                                      <afc-button
-                                          [label]="'Submit'"
-                                          [disableButton]="false"
-                                          [loading]="false"
-                                          (buttonClick)="authenticate()"
-                                          [style]="'primary'"
-                                          [size]="'sm'"
-                                      />
-                                  </div>
-                                  <nz-form-item *ngIf="otpIsVisible">
-                                      <nz-form-control nzErrorTip="Please input your Password!" >
-                                        
-                                        <div class="d-flex">
-                                          <nz-input-group nzPrefixIcon="lock">
-                                            <input name="otp" type="password" nz-input [(ngModel)]="loginForm.otp" placeholder="OTP" />
-                                          </nz-input-group>
-                                        </div>
-                                        
-                                      </nz-form-control>
-                                    </nz-form-item>
-                                    <div class="mt-3 d-flex justify-content-center" *ngIf="otpIsVisible">
-                                      <afc-button
-                                          [label]="'Submit'"
-                                          [disableButton]="false"
-                                          [loading]="false"
-                                          (buttonClick)="authenticate()"
-                                          [style]="'primary'"
-                                          [size]="'sm'"
-                                      />
-                                  </div>
-                                </form>
-                              </div>
-                              <div class="col-md-4"></div>
-                            </div>
-                          </div>
-                        } -->
                         @if (current == 1) {
                           <p>To proceed, please select the currency for the loan</p>
                             <div class="row">
@@ -258,8 +58,8 @@
                                 </nz-form-item>
                             </div>
                             </div>
-                          
-                            
+
+
                           @if(isCurrencySelected) {
                             <div>
                               <div class="row mt-3">
@@ -269,14 +69,17 @@
                                               <nz-option *ngFor="let account of filteredAccounts" [nzValue]="account" [nzLabel]="account.currency + ' - ' + account.number"></nz-option>
                                             </nz-select>
                                       </nz-form-item>
-                                      
+
                                   </div>
-                                  <div class="col-md-4">
+                                  <div class="col-md-4 d-flex flex-column">
                                       <nz-form-item>
-                                              <input name="salary" nz-input [(ngModel)]="loanApplicationForm.salary" placeholder="Salary" />
-                                        </nz-form-item>
+                                        <nz-input-number name="salary" [(ngModel)]="loanApplicationForm.salary" nzMin="1" />
+                                      </nz-form-item>
+                                    <div style="font-size: 12px;color: rgba(0, 0, 0, 0.45);font-style: italic;">
+                                      Salary
+                                    </div>
                                   </div>
-  
+
                                   <div class="col-md-4 d-flex flex-column">
                                     <nz-date-picker
                                       [nzDisabledDate]="disabledDate"
@@ -289,34 +92,10 @@
                                         Next Salary Date
                                       </div>
                                   </div>
-  
-                                  
+
+
                               </div>
-                              <div class="row">
-                                  <div class="col-md-4">
-                                      <nz-form-item>
-                                            <div class="col-md-4 w-100">
-                                              <nz-form-item>
-                                                      <input name="loanProduct" [disabled]="true" nz-input [(ngModel)]="loanApplicationForm.loanProduct" placeholder="Loan Product" />
-                                                </nz-form-item>
-                                          </div>
-                                      </nz-form-item>
-                                      
-                                  </div>
-                                  <div class="col-md-4">
-                                      <nz-form-item>
-                                              <input name="amount" nz-input [(ngModel)]="loanApplicationForm.amount" placeholder="Amount" />
-                                        </nz-form-item>
-                                  </div>
-                                  <div class="col-md-4">
-                                    <nz-form-item>
-                                        <nz-select name="loanType" [(ngModel)]="loanApplicationForm.tenure" nzPlaceHolder="Select Loan Tenure">
-                                            <nz-option [nzValue]="option" [nzLabel]="option + ' months'" *ngFor="let option of loanTenure"></nz-option>
-                                          </nz-select>
-                                    </nz-form-item>
-                                    
-                                </div>
-                              </div>
+
                               <div class="row">
                                   <div class="col-md-4">
                                       <nz-upload
@@ -357,9 +136,9 @@
                               </nz-upload>
                                   </div>
                               </div>
-  
-                          
-  
+
+
+
                               <div class="row mt-3">
                                 <div class="col-md-4">
                                   <nz-form-item>
@@ -416,141 +195,13 @@
                                     </nz-form-item>
                               </div>
                               </div>
-                            
+
                           </div>
                           }
-                          
+
                         }
-                        @if (current == 2) {
-                          <div class="row">
-                            <div class="col-md-8">
-                                <nz-form-item>
-                                      <div class="w-100 d-flex">
-                                        <div class="flex-grow-1">
-                                          <nz-form-item>
-                                            <input name="guarantorAccountNumber" nz-input [(ngModel)]="guarantorForm.accountNumber" placeholder="Guarantor's Account Number" />
-                                      </nz-form-item>
-                                        </div>
-                                        
-  
-                                          <div>
-                                            <afc-button
-                                              [label]="'Submit'"
-                                              [disableButton]="false"
-                                              [loading]="getGuarantorInformationLoader"
-                                              (buttonClick)="getGuarantorInformation()"
-                                              [style]="'primary'"
-                                              [size]="'sm'"
-                                            />
-                                          </div>
-                                    </div>
-                                </nz-form-item>
-                                
-                            </div>
-                            </div>
-  
-                            <div class="row" *ngIf="guarantorInformation.success">
-                              <nz-page-header nzTitle="Guarantor" nzSubtitle="Details about the guarantor"></nz-page-header>
-                              <div class="mt-3">
-                                <nz-list nzBordered>
-                                  <nz-list-item>
-                                    <span nz-typography><mark>GUARANTOR NAME</mark></span>
-                                    {{ guarantorInformation.NAME }}
-                                  </nz-list-item>
-                                    <nz-list-item>
-                                      <span nz-typography><mark>ACCOUNT</mark></span>
-                                      {{ guarantorInformation.CURRENCY }} {{ guarantorInformation.ACCOUNT }}
-                                    </nz-list-item>
-  
-                                    <nz-list-item>
-                                      <span nz-typography><mark>PHONE NUMBER</mark></span>
-                                      {{ maskNumber(guarantorInformation.MSISDN) }} 
-                                    </nz-list-item>
-  
-                                </nz-list>
-                              </div>
-                            </div>
-                        }
-                        @if (current == 3) {
-                          @if (queryTicket) {
-                            <div>
-                              <nz-page-header nzTitle="Enquiry Results"></nz-page-header>
-                              <nz-list nzBordered>
-                                <nz-list-item>
-                                  <span nz-typography>Name</span>{{queryTicket.record.enquiryResult.additionalData.CUSTOMER_NAME}} 
-                                </nz-list-item>
-                                <nz-list-item>
-                                  <span nz-typography>Account</span>{{queryTicket.record.additionalData.currency}} {{queryTicket.record.additionalData.accountNumber}}
-                                </nz-list-item>
-                                    <nz-list-item>
-                                      <span nz-typography>Max Qualifying Amount</span>{{queryTicket.record.additionalData.currency}} {{queryTicket.record.enquiryResult.maxQualifyingAmount_L | number:'1.2-2'}}
-                                    </nz-list-item>
-                                    <nz-list-item>
-                                      <span nz-typography>Amount</span>       <nz-form-item>
-                                        <input name="loanApplicationAmount" nz-input [(ngModel)]="queryTicket.record.additionalData.amount" placeholder="Amount" />
-                                  </nz-form-item>
-                                    </nz-list-item>
-                                </nz-list>
-  
-                                <!-- <nz-page-header nzTitle="Loans"></nz-page-header>
-                                <div *ngIf="queryTicket.record.enquiryResult.additionalData.LMS_LOANS.isArray">
-                                  <nz-list nzBordered *ngFor="let loan of queryTicket.record.enquiryResult.additionalData.LMS_LOANS" class="mb-3">
-                                    <nz-list-item>
-                                      <span nz-typography>Loan Account Number</span>{{loan.loanAccountNumber}}
-                                    </nz-list-item>
-                                    <nz-list-item>
-                                      <span nz-typography>Loan Account Currency</span>{{loan.loanAccountCurrency}}
-                                    </nz-list-item>
-                                    <nz-list-item>
-                                      <span nz-typography>Loan Amount</span>      {{loan.loanAmount}}
-                                    </nz-list-item>
-                                    <nz-list-item>
-                                      <span nz-typography>Loan Maturity Date</span>       {{loan.loanMaturityDate}}
-                                    </nz-list-item>
-                                    <nz-list-item>
-                                      <span nz-typography>Total Due Outstanding</span>       {{loan.totalDueOutstanding}}
-                                    </nz-list-item>
-                                    <nz-list-item>
-                                      <span nz-typography>Total Loan Outstanding</span>       {{loan.totalLoanOutstanding}}
-                                    </nz-list-item>
-                                    
-                                </nz-list>
-                                </div>
-                                <div *ngIf="!queryTicket.record.enquiryResult.additionalData.LMS_LOANS.isArray">
-                                  <nz-list nzBordered class="mb-3">
-                                    <nz-list-item>
-                                      <span nz-typography>Loan Account Number</span>{{queryTicket.record.enquiryResult.additionalData.LMS_LOANS.loanAccountNumber}}
-                                    </nz-list-item>
-                                    <nz-list-item>
-                                      <span nz-typography>Loan Account Currency</span>{{queryTicket.record.enquiryResult.additionalData.LMS_LOANS.loanAccountCurrency}}
-                                    </nz-list-item>
-                                    <nz-list-item>
-                                      <span nz-typography>Loan Amount</span>      {{queryTicket.record.enquiryResult.additionalData.LMS_LOANS.loanAmount}}
-                                    </nz-list-item>
-                                    <nz-list-item>
-                                      <span nz-typography>Loan Maturity Date</span>       {{queryTicket.record.enquiryResult.additionalData.LMS_LOANS.loanMaturityDate}}
-                                    </nz-list-item>
-                                    <nz-list-item>
-                                      <span nz-typography>Total Due Outstanding</span>       {{queryTicket.record.enquiryResult.additionalData.LMS_LOANS.totalDueOutstanding}}
-                                    </nz-list-item>
-                                    <nz-list-item>
-                                      <span nz-typography>Total Loan Outstanding</span>       {{queryTicket.record.enquiryResult.additionalData.LMS_LOANS.totalLoanOutstanding}}
-                                    </nz-list-item>
-                                    
-                                </nz-list>
-                                </div> -->
-                                
-  
-                                
-                                
-                          </div>
-                          }
-                          @if (!queryTicket) {
-                            <nz-skeleton></nz-skeleton>
-                          }
-                        
-                        }
-                        @if (current ==4) {
+
+                        @if (current ==2) {
                           <div class="disclaimer">
                             <h5>Disclaimer and Terms & Conditions Agreement</h5>
                             <p>By submitting this form, you acknowledge and agree to the following terms and conditions:</p>
@@ -589,8 +240,8 @@
                               I have read and agree to the terms and conditions.
                           </label>
                             </div>
-    
-                            
+
+
                           </div>
                         }
                       </div>
@@ -601,7 +252,7 @@
                             nz-tooltip [nzTooltipTitle]="((current == 3 && loanApplicationContinuation === 'true')) ? 'You cannot go back to previous stages' : ''"
                               [label]="'Previous'"
                               [disableButton]="(!(current > 0) || (current == 3 && loanApplicationContinuation === 'true'))"
-                              [loading]="false"
+                              [loading]="submitLoanApplicationLoader"
                               (buttonClick)="pre()"
                               [style]="'cancel'"
                               [size]="'sm'"
@@ -610,27 +261,27 @@
                           <div class="col d-flex justify-content-end">
                             <afc-button
                               nz-tooltip [nzTooltipTitle]="(current === 0 && !isAcknowledged) ? 'You can only proceed by acknowledging the disclaimer' : ''"
-                              *ngIf="(current < 4)"
+                              *ngIf="(current < 2)"
                               [label]="'Next'"
-                              [disableButton]="(current === 0 && !isAcknowledged) || 
+                              [disableButton]="(current === 0 && !isAcknowledged) ||
                               (current == 1 && !isLoanApplicationFormFilled(loanApplicationForm, payslipFileList, proofOfEmpFileList))"
                               [loading]="false"
                               (buttonClick)="next()"
                               [style]="'cancel'"
                               [size]="'sm'"
                             />
-          
+
                             <afc-button
                             nz-popconfirm
         nzPopconfirmTitle="Are you sure you want to submit this application"
         nzPopconfirmPlacement="bottom"
-        (nzOnConfirm)="confirmLoanApplication()"
+        (nzOnConfirm)="submitLoanApplication()"
         (nzOnCancel)="cancelLoanApplication()"
                             nz-tooltip [nzTooltipTitle]="(!isDisclaimerAcknowledged) ? 'You can only proceed by acknowledging the disclaimer' : ''"
-                              *ngIf="current === 4"
-                              [label]="'Done'"
+                              *ngIf="current === 2"
+                              [label]="'Submit'"
                               [disableButton]="!isDisclaimerAcknowledged"
-                              [loading]="false"
+                              [loading]="submitLoanApplicationLoader"
                               (buttonClick)="done()"
                               [style]="'primary'"
                               [size]="'sm'"
@@ -639,21 +290,21 @@
                         </div>
                       </div>
                     </div>
-                    
-                    
-                    
+
+
+
                   </div>
                 </div>
-                
+
               </div>
             </div>
             <!-- [disableButton]="current == 0 && !checkPersonalInformation()" -->
           </div>
         </div>
       }
-      
+
     </div>
-  
+
     <nz-modal
     [(nzVisible)]="isDoneVisible"
     [nzTitle]="modalDoneTitle"
@@ -662,7 +313,7 @@
     (nzOnCancel)="handleDoneCancel()"
   >
     <ng-template #modalDoneTitle></ng-template>
-  
+
     <ng-template #modalDoneContent>
       <div style="text-align: center">
         Your application has been submitted for processing. <br />
@@ -671,7 +322,7 @@
         <span style="font-size: 20px">{{savedTicketNumber}}</span>
       </div>
     </ng-template>
-  
+
     <ng-template #modalDoneFooter> </ng-template>
   </nz-modal>
 
@@ -684,20 +335,20 @@
     (nzOnCancel)="handleDoneCancel()"
   >
     <ng-template #modalSubmitTitle></ng-template>
-  
+
     <ng-template #modalSubmitContent>
       <div style="text-align: center">
         <div *ngIf="!gotTicketNumber">
           Are you sure you want to submit this loan application? <br>
           <div class="mt-3 d-flex justify-content-center">
-            <afc-button
-                              [label]="'Submit'"
-                              [disableButton]="false"
-                              [loading]="submitLoanApplicationLoader"
-                              (buttonClick)="submitLoanApplication()"
-                              [style]="'primary'"
-                              [size]="'sm'"
-                            />
+<!--            <afc-button-->
+<!--                              [label]="'Submit'"-->
+<!--                              [disableButton]="false"-->
+<!--                              [loading]="submitLoanApplicationLoader"-->
+<!--                              (buttonClick)="submitLoanApplication()"-->
+<!--                              [style]="'primary'"-->
+<!--                              [size]="'sm'"-->
+<!--                            />-->
           </div>
         </div>
         <div *ngIf="gotTicketNumber">
@@ -706,12 +357,12 @@
           <br>
           The bank will get back to you shortly to complete the process
         </div>
-        
 
-        
+
+
       </div>
     </ng-template>
-  
+
     <ng-template #modalSubmitFooter> </ng-template>
   </nz-modal>
 
@@ -731,14 +382,50 @@
 
       <ng-template #modalLoginFooter></ng-template>
     </nz-modal>
-  
+
+
+    <nz-modal
+      [(nzVisible)]="isErrorVisible"
+      [nzTitle]="errorModalTitle"
+      [nzContent]="errorModalContent"
+      [nzFooter]="errorModalFooter"
+      (nzOnCancel)="handleErrorCancel()"
+    >
+      <ng-template #errorModalTitle></ng-template>
+
+      <ng-template #errorModalContent>
+        <div class="d-flex justify-content-center">
+          <h3>Oh No!</h3>
+        </div>
+        <div class="d-flex justify-content-center">
+          <img src="/assets/images/illustrations/sad-modal.svg" alt="" style="max-width: 300px;">
+        </div>
+        <div class="d-flex justify-content-center" style="text-align: center;font-size: 18px;color: #989898;">
+          <p>{{errorMessage}}</p>
+        </div>
+        <div class="mt-3 d-flex justify-content-center">
+          <afc-button
+            (click)="handleErrorCancel()"
+            [label]="'Leave'"
+            [loading]="false"
+            [style]="'gradient'"
+            [size]="'sm'"
+          />
+        </div>
+      </ng-template>
+
+      <ng-template #errorModalFooter>
+
+      </ng-template>
+    </nz-modal>
+
+
     <nz-drawer
     [nzSize]="drawerSize"
       (nzOnClose)="close()"
       [nzVisible]="tcVisible"
       nzPlacement="right"
       nzTitle="Terms and Conditions"
-      (nzOnClose)="close()"
     >
       <ng-container *nzDrawerContent>
         <div class="mb-3">
@@ -748,169 +435,89 @@
           </button>
         </div>
         <div class="terms-and-conditions" id="terms-and-conditions" style="padding: 20px;">
-          PAYDAY LOANS
 
-Management Fee
+          <h4>PAYDAY LOANS</h4>
+          <h5>Management Fee</h5>
+          <p>Management fees shall be paid on the principal amount and shall be paid over the tenure of the facility. Management fees will be updated from time to time, and the rates will be shared through the Bank’s business conditions.</p>
 
-Management fees shall be paid on the principal amount and shall be paid over the tenure of the facility. Management fees will be updated from time to time, and the rates will be shared through the Bank’s business conditions.
+          <h5>Charges, fees and penalty recovery</h5>
+          <p>All overdue and unpaid instalments or amounts shall attract penalty interest per annum, above the rate</p>
 
- 
+          <h5>Insurance</h5>
+          <p>The Bank will take insurance to cover against Death and Involuntary Retrenchment. The applicant will be required to pay the insurance premium at the inception or renewal of facilities.</p>
 
-Charges, fees and penalty recovery
+          <h5>Client Declaration:</h5>
+          <p>I agree to abide by the terms and conditions of the loan as availed to me by the branch. I authorize AFC Commercial Bank to debit my account with amount due inclusive of principal, interest and charges on due date.</p>
 
-All overdue and unpaid instalments or amounts shall attract penalty interest per annum, above the rate
+          <p>The Bank reserves the right to withdraw the facility at any time without giving reasons.</p>
 
-Insurance
 
-The Bank will take insurance to cover against Death and Involuntary Retrenchment. The applicant will be required to pay the insurance premium at the inception or renewal of facilities.
+          <h4>CONSUMER LOANS</h4>
+          <nz-table nzTemplateMode>
+            <thead>
+            <tr>
+              <th>Terms</th>
+              <th>USD</th>
+              <th>ZWG</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+              <td>Multiplier</td>
+              <td>10 x net salary</td>
+              <td>10 x net salary</td>
+            </tr>
+            <tr>
+              <td>Tenor</td>
+              <td>24 months</td>
+              <td>24 months</td>
+            </tr>
+            <tr>
+              <td>Interest Rate</td>
+              <td>21% p.a</td>
+              <td>55% p.a</td>
+            </tr>
+            <tr>
+              <td>Establishment Fee</td>
+              <td>3% once off</td>
+              <td>3% once off</td>
+            </tr>
+            <tr>
+              <td>Insurance</td>
+              <td>1.5%</td>
+              <td>1.5%</td>
+            </tr>
+            <tr>
+              <td>Debt ratio</td>
+              <td>50%</td>
+              <td>50%</td>
+            </tr>
+            </tbody>
+          </nz-table>
 
- 
 
-Client Declaration: I agree to abide by the terms and conditions of the loan as availed to me by the branch. I authorize AFC Commercial Bank to debit my account with amount due inclusive of principal, interest and charges on due date.
+          <ul>
+            <li>Loan application fees US$5</li>
+            <li>Security fees (for secured loans only) 3% once off</li>
+          </ul>
 
- 
-
-The Bank reserves the right to withdraw the facility at any time without giving reasons.
-
- 
-
-CONSUMER LOANS
-
-Terms
-
-USD
-
-ZWG
-
-Multiplier
-
-10 x net salary
-
-10 x net salary
-
-Tenor
-
-24 months
-
-24 months
-
-Interest Rate
-
-21%p.a
-
-55%p.a
-
-Establishment Fee
-
-3% once off
-
-3% once off
-
-Insurance
-
-1.5%
-
-1.5%
-
-Debt ratio
-
-50%
-
-50%
-
-Loan application fees                    US$5
-
-Security fees (for secured loans only)        3% once off
-
-Conditions
-
-Salary to come through AFC CB for the tenure of the loan.
-
-Salary to  credit AFC CB account for a minimum of 3 months to qualify for a consumer.  (1 month for overdrafts and  school fees loans).
-
-Undertaking by employer to remit terminal benefits if the borrower leaves employment before expiry of the loan.
-
-Borrower to provide a guarantor that is permanently employed.
-
- Loan amounts of US$10,000 or more to be secured by a bond or PART IV security.
-
- 
-
-GENERAL
-
-The Borrower consents to the jurisdiction of the Magistrate’s Court notwithstanding the fact that the Bank’s claim at any time may otherwise exceed the jurisdiction of that court.
-
-The Borrower shall be liable for the payment of all expenses incurred by the Bank in exercising any right against the Borrower in respect of any breach of these conditions, including all legal charges on the attorney/client scale, debt collection/attorney collection charges, and tracing charges.
-
-No delay, indulgence, or relaxation in the exercising of any of the Bank’s rights under these terms and conditions shall constitute a waiver of such rights.
-
-No variation of this agreement shall be effective unless it is in writing and signed by the Parties.
-
-Once the Borrower completes the borrowing process on the AFC Commercial Bank mobile banking platform (*276#), they have accepted these terms and conditions.
-          <h4>AFC Commercial Bank Account Opening Terms and Conditions</h4>
-          <h5>Declaration by Account Applicant</h5>
-          <p>I/We certify that the information given in support of this application is true and correct and I/We understand that in the event of any information provided being inaccurate, the Bank reserves the right to decline this application without giving reasons thereof. I/We agree to be liable for any overdraft or debt which the bank may permit on this account or any other accounts in my/our name (s). I/We understand and agree to abide by the bank’s minimum balance requirements and accept the right of the bank to compulsorily close my/our account without warning if the account is not conducted satisfactorily. I/We understand that any erroneous claim that appears on a bank Statement must be made in writing 30 days of date of such a statement. I/We agree that I/We have read, understood and accept the terms and conditions of the account and agree to be bound by them.</p>
-          <h4>TERMS AND CONDITIONS</h4>
-          <h5>AFC COMMERCIAL BANK Account</h5>
+          <h5>Conditions</h5>
           <ol>
-            <li>Monthly maintenance fees may vary depending on the type of account.</li>
-            <li>All transactions may be subject to transaction fees and charges as published in our business conditions periodically.</li>
-            <li>You may be requested by the Bank to update your KYC information as and when necessary.</li>
-            <li>The Bank may make enquiries about your financial position and credit record from third party credit bureaus.</li>
-            <li>Customers can exercise their rights to be informed, and to access their information, complain, and object to processing of their information, correction, erasure and withdraw consent regarding processing of their personally identifiable information, within the confines of Zimbabwean laws. All requests must be made in writing.</li>
-            <li>The Bank reserves the right to close your account/s due to inactivity, illegal conduct or non-compliance with the Terms and Conditions of this account.</li>
-          </ol>
-          <h5>AFC COMMERCIAL BANK ATM Card</h5>
-          <p>I agree to the following conditions:</p>
-          <ol>
-            <li>I/ We agree to use the card subject to the maximum limit set by the bank.</li>
-            <li>I/We authorise the bank to debit from my account unspecified amounts due to the bank each day in full payment of all indebtness </li>
-            <li>The bank reserves the right to withdraw / cancel or refuse any Card transaction without giving prior notice.</li>
-            <li>In the event of Card being lost / stolen, I will notify the bank immediately and shall not make the bank liable for any loss made thereof.</li>
-            <li>The Card remains the property of the bank and shall use it specifically for the intended purpose as set out by the Bank.</li>
-          </ol>
-          <h5>AFC COMMERCIAL BANK SMS Alert</h5>
-          <ol>
-            <li>The instruction and / or procedures of the Bank shall bind the client.</li>
-            <li>While AFC Commercial Bank will take due care to make this service available at all times but in the unlikely event of any reasons which are beyond the Bank’s control, including but not limited to any technical difficulty, which results in outage of the services and / or loss of any transmission of messages,  AFC Commercial Bank shall not liable.</li>
-            <li>The client hereby irrevocably agrees to hold free and harmless the Bank and indemnify the Bank against all actions, claims, damages, liabilities, losses, , costs and expenses of whatever nature that may result due to the Bank providing the services and in actioning any instructions from the regulator or statutory bodies.</li>
-            <li>The Client hereby indemnifies the Bank from any liability including claims for damages that may arise in the event that the Bank erroneously communicates with client with regard to any credit or debits on client’s accounts.</li>
-            <li>AFC Commercial Bank will transmit the SMS Alerts notifications on time to the Service Provider but delivery of the data to the Subscriber’s equipment depends on the Service Provider locally and abroad and the Bank cannot be held responsible for non-receipt or erroneous data received or receipt of the messages at odd times and the consequences arising there from.</li>
-            <li>AFC Commercial Bank is not liable for any breach of confidentiality of any data/ information sent to the Subscriber’s equipment. The client acknowledges that he / she is solely responsible for protecting his/her mobile phone/ device and privacy.</li>
-            <li>In case of change / disconnection/ loss of Client’s mobile phone number (s) or equipment, the Client undertakes to notify the Bank in writing immediately of such instance to protect the interest of all parties. The Subscriber shall indemnify the Bank for all loss or damage on account of Client’s failure to notify the Bank of the change / disconnection of Subscriber’s mobile phone number (s).</li>
-            <li>The Bank has the right to withdraw any or all of the facilities under the service, without reason, at any time after serving a notice to the Subscriber by ordinary post or via message to the Client’s equipment.</li>
+            <li>Salary to come through AFC CB for the tenure of the loan.</li>
+            <li>Salary to credit AFC CB account for a minimum of 3 months to qualify for a consumer. (1 month for overdrafts and school fees loans).</li>
+            <li>Undertaking by employer to remit terminal benefits if the borrower leaves employment before expiry of the loan.</li>
+            <li>Borrower to provide a guarantor that is permanently employed.</li>
+            <li>Loan amounts of US$10,000 or more to be secured by a bond or PART IV security.</li>
           </ol>
 
-          <h4>AFC Commercial Bank Internet Banking</h4>
-          <h5>i.	Definitions</h5>
-          <p>In these terms and conditions:</p>
-          <p><b>“Account”</b> means any account by the Bank in the name of an Internet Banking Customer on which the customer is authorised to operate through the Internet Banking Facility.</p>
-          <p><b>“Internet Banking Facility”</b> means banking delivery channel that uses Internet technology.</p>
-          <p>Internet Banking Customer” means an AFC Commercial Bank customer who has authorised the Bank to accept Internet-based transactions by the said customer’s accounts and <b>”We”</b>, <b>“I”</b> and <b>“our”</b> denote such customer.</p>
-          <p><b>“The Bank”</b> means AFC Commercial Bank</p>
-
-          <h5>ii.	Copyright and trademarks</h5>
-          <p>Except as otherwise expressly stated herein, the copyright and all other intellectual property rights in the contents of the website, including but not limited to all design, text, sound recordings, images or links, are the property of the Bank and, as such they may not be reproduced, transmitted, published, performed, broadcast, stored, adapted, distributed, displayed, licensed, altered, hyperlinked or otherwise used in whole or in part in any manner without prior written consent of the Bank.</p>
-
-          <h5>iii.	Deed use of Internet Banking</h5>
-          <p>I / We agree that all instructions issued by me/ us to the Bank shall be deemed irrevocable and any alleged fraudulent instructions shall be deemed to be my responsibility unless negligence on the part of the Bank is proved.</p>
-
-          <h5>iv.	Indemnity</h5>
-          <p>We hereby indemnify and hold the Bank harmless against all damages, losses, expenses and costs, including legal costs, suffered or incurred by the Bank in connection with or arising from:</p>
-          <ol>
-            <li>Our/ my access to the website and / or use the online services: or</li>
-            <li>Any other party’s access to the website and / or use of the online services using my/our USER ID and / or login password, or.</li>
-            <li>Our / my breach of any of these terms and conditions of access where any party was able to access the website and / or use the online services by using our / my USER ID and / or login password.</li>
-          </ol>
-          <h5>v.	Time Frames</h5>
-          <p>I / We acknowledge that transactions that use the Real Time Gross Settlement (RTGS) form of settlement must be done and authorised before 11.00 hours so as to ensure a smooth flow in transmission on the RTGS platform.</p>
-          <h5>vi.	Payment of bills</h5>
-          <p>All instructions for the payment of bills should be effected at least 2 working days before their due dates so as to allow a smooth flow in transmission to their intended payees.</p>
-          <h5>vii.	Charges</h5>
-          <p>Charges imposed by the Bank from time to time shall be payable by the Internet Banking Customer for the provision of the Internet Banking Facility, whether or not the Internet Banking Facility is being used during the period concerned.</p>
-          <h5>viii.	Termination of facility by Bank</h5>
-          <p>We acknowledge further that the Bank may terminate our / my access to the website and / or our use of the online services at any time without notice and without assigning any reason therefore.</p>
-
+          <h4>GENERAL</h4>
+          <ul>
+            <li>The Borrower consents to the jurisdiction of the Magistrate’s Court notwithstanding the fact that the Bank’s claim at any time may otherwise exceed the jurisdiction of that court.</li>
+            <li>The Borrower shall be liable for the payment of all expenses incurred by the Bank in exercising any right against the Borrower in respect of any breach of these conditions, including all legal charges on the attorney/client scale, debt collection/attorney collection charges, and tracing charges.</li>
+            <li>No delay, indulgence, or relaxation in the exercising of any of the Bank’s rights under these terms and conditions shall constitute a waiver of such rights.</li>
+            <li>No variation of this agreement shall be effective unless it is in writing and signed by the Parties.</li>
+            <li>Once the Borrower completes the borrowing process on the AFC Commercial Bank mobile banking platform (*276#), they have accepted these terms and conditions.</li>
+          </ul>
         </div>
       </ng-container>
     </nz-drawer>

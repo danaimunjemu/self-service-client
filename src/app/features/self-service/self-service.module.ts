@@ -20,6 +20,7 @@ import { SelfServiceStatusTagComponent } from './components/tags/self-service-st
 import { AfcLinkLoginComponent } from './components/afc-link-login/afc-link-login.component';
 import { GuarantorConfirmationComponent } from './pages/guarantor-confirmation/guarantor-confirmation.component';
 import { InsuranceApplicationComponent } from './pages/insurance-application/insurance-application.component';
+import { LoanApplicationNonAfcComponent } from './pages/loan-application-non-afc/loan-application-non-afc.component';
 
 const config: SocketIoConfig = { url: 'ws://localhost:8000/ws', options: {} };
 
@@ -38,6 +39,7 @@ const config: SocketIoConfig = { url: 'ws://localhost:8000/ws', options: {} };
     AfcLinkLoginComponent,
     GuarantorConfirmationComponent,
     InsuranceApplicationComponent,
+    LoanApplicationNonAfcComponent,
   ],
   imports: [
     CommonModule,

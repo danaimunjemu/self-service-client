@@ -1,5 +1,7 @@
 import { Component, OnDestroy, OnInit, ChangeDetectorRef, OnChanges, SimpleChanges, } from '@angular/core';
-import countries from './countries';
+import countries from "../account-opening/countries";
+import banks from "./banks";
+import products from "./products";
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { RoutingService } from '../../../../core/services/routing.service';
 import { AccountOpeningService } from '../../services/account-opening.service';
@@ -13,13 +15,12 @@ import jsPDF from 'jspdf';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { NzDrawerSize } from 'ng-zorro-antd/drawer';
 
-
 @Component({
-  selector: 'app-account-opening',
-  templateUrl: './account-opening.component.html',
-  styleUrl: './account-opening.component.scss',
+  selector: 'app-loan-application-non-afc',
+  templateUrl: './loan-application-non-afc.component.html',
+  styleUrl: './loan-application-non-afc.component.scss'
 })
-export class AccountOpeningComponent implements OnInit, OnChanges, OnDestroy {
+export class LoanApplicationNonAfcComponent implements OnInit, OnChanges, OnDestroy {
   constructor(
     private messageService: NzMessageService,
     private routingService: RoutingService,
@@ -51,7 +52,7 @@ export class AccountOpeningComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.getBranches()
+    this.getBranches();
     this.subs.add = this.accountOpeningService.queryRegistrarResponse$.subscribe((res: any) => {
       this.onQueryRegistrarResponse(res);
     });
@@ -69,10 +70,10 @@ export class AccountOpeningComponent implements OnInit, OnChanges, OnDestroy {
     this.accountOpeningService.getBranches();
   }
 
-  onGetBranchesResponse(res: any){
+  onGetBranchesResponse(res: any) {
     console.log(res);
     if (res.success == true) {
-      this.idcBranches=res.data;
+      this.idcBranches = res.data;
     }
     this.getBranchesLoader = false;
   }
@@ -134,11 +135,11 @@ export class AccountOpeningComponent implements OnInit, OnChanges, OnDestroy {
 
         console.log(res.data)
         this.title = ["DR", "REV"]
-        if(res.data.Sex == 'M') {
+        if (res.data.Sex == 'M') {
           console.log("MALE")
           this.title = [...this.title, "MR"];
         }
-        if(res.data.Sex == 'F') {
+        if (res.data.Sex == 'F') {
           console.log("FEMALE")
           this.title = [...this.title, "MRS", "MISS", "MS"];
         }
@@ -306,7 +307,7 @@ export class AccountOpeningComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   async next() {
-    if(this.current == 1) {
+    if (this.current == 1) {
       const isValid = this.validateMobileNumber(this.createAccountForm.contactDetails.mobileNumber);
       if (!isValid) {
         this.notification.create('error', 'Error', 'The mobile number you entered is invalid')
@@ -325,18 +326,18 @@ export class AccountOpeningComponent implements OnInit, OnChanges, OnDestroy {
         return; // Stop execution if mobile number is invalid
       }
     }
-    if(this.current == 2) {
+    if (this.current == 2) {
       this.processAccountType();
       if (!this.processIncomevsSlab()) {
         this.notification.create('error', 'Error', 'Your annual income slab should be greater than your gross income')
         return;
       }
     }
-    if(this.current == 3) {
-      if(this.createAccountForm.employmentDetails.typeOfEmployment === 'Employed' && this.otherFileList.length == 0) {
+    if (this.current == 3) {
+      if (this.createAccountForm.employmentDetails.typeOfEmployment === 'Employed' && this.otherFileList.length == 0) {
         this.notification.create('error', 'Error', 'You need to upload your proof of income')
         return;
-      } else{
+      } else {
         await this.uploadAttachments();
       }
 
@@ -360,7 +361,7 @@ export class AccountOpeningComponent implements OnInit, OnChanges, OnDestroy {
 
 
     console.log(newCreateAccountForm);
-    this.accountOpeningService.createNewRecord(newCreateAccountForm, 'account-opening');
+    this.accountOpeningService.createNewRecord(newCreateAccountForm, 'non-afc-loans');
   }
 
   isDoneVisible = false;
@@ -387,6 +388,10 @@ export class AccountOpeningComponent implements OnInit, OnChanges, OnDestroy {
   signatureFileList: any[] = [];
   proofOfResFileList: any[] = [];
   otherFileList: any[] = [];
+  payslipFileList: any[] = [];
+  proofOfEmpFileList: any[] = [];
+
+
 
   checkIdUploadFile = (file: NzUploadFile): boolean => {
     this.idFileList = this.idFileList.concat(file);
@@ -408,22 +413,34 @@ export class AccountOpeningComponent implements OnInit, OnChanges, OnDestroy {
     return false;
   }
 
+  checkPayslipUploadFile = (file: NzUploadFile): boolean => {
+    this.payslipFileList = this.payslipFileList.concat(file);
+    return false;
+  }
+
+  checkEmploymentUploadFile = (file: NzUploadFile): boolean => {
+    this.proofOfEmpFileList = this.proofOfEmpFileList.concat(file);
+    return false;
+  }
+
 
   async uploadAttachments() {
-    console.log(this.idFileList);
-    console.log(this.profilePhotoFileList)
 
     try {
       const idDocs = await this.processUpload(this.idFileList);
       const profileDocs = await this.processUpload(this.profilePhotoFileList);
       const signatureDocs = await this.processUpload(this.signatureFileList);
       const proofOfResDocs = await this.processUpload(this.proofOfResFileList);
+      const paySlipDocs = await this.processUpload(this.payslipFileList);
+      const proofOfEmpDocs = await this.processUpload(this.proofOfEmpFileList);
       const otherDocs = await this.processUpload(this.otherFileList);
 
       this.createAccountForm.documents.id = idDocs.length > 0 ? idDocs[0].id : ''; // Extract first item as string
       this.createAccountForm.documents.profile = profileDocs.length > 0 ? profileDocs[0].id : '';
       this.createAccountForm.documents.signature = signatureDocs.length > 0 ? signatureDocs[0].id : '';
       this.createAccountForm.documents.proofOfRes = proofOfResDocs.length > 0 ? proofOfResDocs[0].id : '';
+      this.createAccountForm.documents.payslip = paySlipDocs.length > 0 ? paySlipDocs[0].id : '';
+      this.createAccountForm.documents.proofOfEmployment = proofOfEmpDocs.length > 0 ? proofOfEmpDocs[0].id : '';
       this.createAccountForm.documents.otherDocuments = otherDocs.map((item) => item.id); // Keep as an array
 
       console.log("-------------------");
@@ -436,7 +453,7 @@ export class AccountOpeningComponent implements OnInit, OnChanges, OnDestroy {
 
   documentsUploadDone: boolean = false;
 
-  cancelAccountOpening(){
+  cancelAccountOpening() {
     this.navigateTo('home');
   }
 
@@ -506,6 +523,11 @@ export class AccountOpeningComponent implements OnInit, OnChanges, OnDestroy {
   middleName: string = '';
   lastName: string = '';
 
+  disabledLoanDate(current: Date): boolean {
+    let today = new Date();
+    return current < today
+  }
+
   // getRegistrarData() {
   //   this.createAccountForm.personalInformation.pidNumber = this.removeSpecialCharacters(this.createAccountForm.personalInformation.pidNumber)
   //   this.queryRegistrarLoader = true;
@@ -516,9 +538,9 @@ export class AccountOpeningComponent implements OnInit, OnChanges, OnDestroy {
     if (MOCK_REGISTRAR) {
       this.onMockRegistrar()
     } else {
-        this.createAccountForm.personalInformation.pidNumber = this.removeSpecialCharacters(this.createAccountForm.personalInformation.pidNumber)
-        this.queryRegistrarLoader = true;
-        this.accountOpeningService.queryRegistrar(this.removeSpecialCharacters(this.createAccountForm.personalInformation.pidNumber));
+      this.createAccountForm.personalInformation.pidNumber = this.removeSpecialCharacters(this.createAccountForm.personalInformation.pidNumber)
+      this.queryRegistrarLoader = true;
+      this.accountOpeningService.queryRegistrar(this.removeSpecialCharacters(this.createAccountForm.personalInformation.pidNumber));
     }
   }
 
@@ -541,11 +563,11 @@ export class AccountOpeningComponent implements OnInit, OnChanges, OnDestroy {
     console.log('Date of birth:', res.DateOfBirth);
     console.log('Date of birth:', dateOfBirth);
 
-    if(res.Sex == 'M') {
+    if (res.Sex == 'M') {
       console.log("MALE")
       this.title = [...this.title, "MR"];
     }
-    if(res.Sex == 'F') {
+    if (res.Sex == 'F') {
       console.log("FEMALE")
       this.title = [...this.title, "MRS", "MISS", "MS"];
     }
@@ -578,14 +600,99 @@ export class AccountOpeningComponent implements OnInit, OnChanges, OnDestroy {
   disabledDate = (current: Date): boolean =>
     current <= this.convertToDate(this.createAccountForm.personalInformation.dateOfBirth) || current > new Date();
 
-  disabledYear (current: Date): boolean {
+  disabledYear(current: Date): boolean {
     let today = new Date();
-      return current > today
+    return current > today
   }
 
   validateMobileNumber(mobile: string): boolean {
     const mobileNumberRegex = /^(2637\d{8}|07\d{8})$/;
     return mobileNumberRegex.test(mobile);
+  }
+
+  fcbFields = {
+    "loan_purpose": [
+      { "key": 1, "value": "Current Account Overdraft" },
+      { "key": 2, "value": "Personal Loan Account" },
+      { "key": 3, "value": "Auto Loan" },
+      { "key": 4, "value": "Educational Loan" },
+      { "key": 5, "value": "Home Improvement Loan" },
+      { "key": 6, "value": "Consolidation Loan" },
+      { "key": 7, "value": "Credit Card" },
+      { "key": 8, "value": "Line Of Credit" },
+      { "key": 9, "value": "Revolving Credit" },
+      { "key": 10, "value": "Business Asset Loan" },
+      { "key": 11, "value": "Business Improvement Loan" },
+      { "key": 12, "value": "Renewable Energy Loan" },
+      { "key": 13, "value": "Wholesale Lending" },
+      { "key": 14, "value": "Other" }
+    ],
+    "employer_industry": [
+      { "key": 1, "value": "Agriculture" },
+      { "key": 2, "value": "Manufacturing" },
+      { "key": 3, "value": "Mining/Quarrying" },
+      { "key": 4, "value": "Energy/Water" },
+      { "key": 5, "value": "Trade" },
+      { "key": 6, "value": "Tourism/Restaurant/Hotels" },
+      { "key": 7, "value": "Transport" },
+      { "key": 8, "value": "Real Estate" },
+      { "key": 9, "value": "Finance" },
+      { "key": 10, "value": "Government" },
+      { "key": 11, "value": "Other" },
+      { "key": 12, "value": "Non/Unemployed" },
+      { "key": 13, "value": "Unknown" },
+      { "key": 14, "value": "Health" },
+      { "key": 15, "value": "Private Security" },
+      { "key": 16, "value": "Police" },
+      { "key": 17, "value": "Army" },
+      { "key": 18, "value": "Prisons & Correctional Services" },
+      { "key": 19, "value": "ICT / Communications" },
+      { "key": 20, "value": "Retail" }
+    ],
+    "property_density": [
+      { "key": 1, "value": "Low" },
+      { "key": 2, "value": "Medium" },
+      { "key": 3, "value": "High" },
+      { "key": 4, "value": "Rural" },
+      { "key": 5, "value": "Industrial" }
+    ],
+    "property_ownership": [
+      { "key": 1, "value": "Owned" },
+      { "key": 2, "value": "Rented" },
+      { "key": 3, "value": "Mortgaged" },
+      { "key": 4, "value": "Parents" },
+      { "key": 5, "value": "Employer Owned" }
+    ],
+    "marital_status": [
+      { "key": "S", "value": "Single" },
+      { "key": "M", "value": "Married" },
+      { "key": "D", "value": "Divorced" },
+      { "key": "W", "value": "Widowed" }
+    ],
+    "occupation_class": [
+      { "key": 0, "value": "N/A" },
+      { "key": 1, "value": "MANAGER" },
+      { "key": 2, "value": "PROFESSIONAL" },
+      { "key": 3, "value": "TECHNICIAN AND ASSOCIATE PROFESSIONAL" },
+      { "key": 4, "value": "CLERICAL SUPPORT WORKER" },
+      { "key": 5, "value": "SERVICE & SALES WORKERS" },
+      { "key": 6, "value": "SKILLED AGRICULTURAL FORESTRY & FISHERY WORKER" },
+      { "key": 7, "value": "CRAFT & RELATED TRADES WORKER" },
+      { "key": 8, "value": "PLANT & MACHINE OPERATOR & ASSEMBLER" },
+      { "key": 9, "value": "ELEMENTARY OCCUPANT" },
+      { "key": 10, "value": "ARMED FORCES OCCUPANT" },
+      { "key": 11, "value": "UNEMPLOYED" }
+    ],
+    "salary": [
+      { "key": 1, "value": "0 – 150" },
+      { "key": 2, "value": "151 – 250" },
+      { "key": 3, "value": "251 – 500" },
+      { "key": 4, "value": "501 – 1,000" },
+      { "key": 5, "value": "1,001 – 2,000" },
+      { "key": 6, "value": "2,001 – 5,000" },
+      { "key": 7, "value": "Over 5,000" },
+      { "key": 8, "value": "Unknown" }
+    ]
   }
 
 
@@ -656,7 +763,7 @@ export class AccountOpeningComponent implements OnInit, OnChanges, OnDestroy {
       annualIncomeSlab: '',
       sourceOfFunds: '',
       dependents: '',
-      currency: '',
+      currency: 'USD',
       grossIncome: '',
       otherSourceOfIncome: '',
       productCode: 'Current Individual',
@@ -669,8 +776,30 @@ export class AccountOpeningComponent implements OnInit, OnChanges, OnDestroy {
       profile: '',
       signature: '',
       proofOfRes: '',
+      payslip: '',
+      proofOfEmployment: '',
       otherDocuments: [] as string[],
     },
+    loan: {
+      amount: null as any,
+      product: {},
+      next_repayment_date: "",
+      type: {},
+      ssb_reference: "",
+      loanPurpose: '',
+      employerIndustry: '',
+      propertyDensity: '',
+      propertyOwnership: '',
+      maritalStatus: '',
+      occupationClass: '',
+      salaryRange: '',
+      employer: ''
+    },
+    bank: {
+      swift_code: "...",
+      bank_name: "",
+      account_number: ""
+    }
   };
 
   // processAccountType() {
@@ -681,6 +810,22 @@ export class AccountOpeningComponent implements OnInit, OnChanges, OnDestroy {
   //     this.createAccountForm.employmentDetails.accountType = 'FXCAI - FCA CAI'
   // }
   // }
+
+  ssbTypes = [
+    "ROCV",
+    "EDU",
+    // "AFZ",
+    // "ZNA",
+    // "GVTPEN",
+    "CISV-PPH"
+  ]
+
+  selectedBank?: any;
+
+  onSelectBank(value: any) {
+    this.createAccountForm.bank.bank_name = value.name;
+    this.createAccountForm.bank.swift_code = value.code
+  }
 
   processAccountType() {
     const currency = this.createAccountForm.employmentDetails.currency;
@@ -720,7 +865,7 @@ export class AccountOpeningComponent implements OnInit, OnChanges, OnDestroy {
       productCode = 'FCA Current Individual';
       accountTypeCode = 'FXCAI- FCA CAI';
       accountSubType = 'FX Individual Low Cost Account';
-    } else if (currency === 'ZWG & USD' ) {
+    } else if (currency === 'ZWG & USD') {
       productCode = this.selectedProductCode
     }
 
@@ -749,89 +894,89 @@ export class AccountOpeningComponent implements OnInit, OnChanges, OnDestroy {
   branches = [
     // 'HEAD OFFICE',
     '8th Avenue Branch Byo',
-'BINDURA',
-'Binga',
-// 'Card Centre',
-// 'Central Cash Depot BYO',
-// 'Central Operations',
-'Checheche',
-'Chegutu',
-// 'Debt Recovery',
-'Chinhoyi',
-'Chipinge',
-'Chiredzi',
-'CHIVI',
-// 'Corporate Banking',
-// 'Executive Banking',
-'Filabusi',
-'Gokwe',
-'Guruve',
-'Gutu',
-'Gwanda',
-'Gweru',
-'Hwange',
-'Inala Hse Bulawayo',
-'Jason Moyo Ave Bulawayo',
-'Jerera',
-'Karoi',
-'Kopje Harare',
-'Kotwa',
-'Lupane',
-'Magunje',
-'Maphisa',
-'Marondera',
-'Masvingo',
-'Mataga',
-'Mt Darwin',
-'Mubaira',
-'Murambinda',
-'Murehwa',
-'Mutare',
-'Mutoko',
-'Mvurwi',
-'Nelson Mandela Ave',
-'Norton',
-'Nyanga',
-'Nyika',
-'Rusape',
-'Rushinga',
-// 'Sanyati',
-// 'Treasury',
-'Wedza',
-'Westgate',
-'Zvishavane',
-// 'Salary Processing',
-// 'MICROFINANCE HQ',
-// 'MICROFINANCE BINDURA',
-// 'MICROFINANCE BINGA',
-// 'MICROFINANCE CHIBUWE',
-// 'MICROFINANCE CHIREDZI',
-// 'MICROFINANCE FILABUSI',
-// 'MICROFINANCE GOKWE',
-// 'MICROFINANCE GURUVE',
-// 'MICROFINANCE GWANDA',
-// 'MICROFINANCE KAROI',
-// 'MICROFINANCE MAPHISA',
-// 'MICROFINANCE MARONDERA',
-// 'MICROFINANCE MUTARE',
-// 'MICROFINANCE MUTOKO',
-// 'MICROFINANCE NELSON',
-// 'MICROFINANCE NORTON',
-// 'MICROFINANCE KOPJE',
-// 'MICROFINANCE SANYATI',
-// 'MICROFINANCE WESTGATE',
-// 'MICROFINANCE EIGHTH',
-// 'MICROFINANCE ZVISHA',
-// 'Land Bank HQ',
-// 'Land Bank Chinhoyi',
-// 'Land Bank Marondera',
-// 'Land Bank Mutare',
-// 'Land Bank Bindura',
-// 'Land Bank Masvingo',
-// 'Land Bank Gweru',
-// 'Land Bank Jason Moyo',
-// 'Land Bank Gwanda',
-// 'Land Bank Harare'
+    'BINDURA',
+    'Binga',
+    // 'Card Centre',
+    // 'Central Cash Depot BYO',
+    // 'Central Operations',
+    'Checheche',
+    'Chegutu',
+    // 'Debt Recovery',
+    'Chinhoyi',
+    'Chipinge',
+    'Chiredzi',
+    'CHIVI',
+    // 'Corporate Banking',
+    // 'Executive Banking',
+    'Filabusi',
+    'Gokwe',
+    'Guruve',
+    'Gutu',
+    'Gwanda',
+    'Gweru',
+    'Hwange',
+    'Inala Hse Bulawayo',
+    'Jason Moyo Ave Bulawayo',
+    'Jerera',
+    'Karoi',
+    'Kopje Harare',
+    'Kotwa',
+    'Lupane',
+    'Magunje',
+    'Maphisa',
+    'Marondera',
+    'Masvingo',
+    'Mataga',
+    'Mt Darwin',
+    'Mubaira',
+    'Murambinda',
+    'Murehwa',
+    'Mutare',
+    'Mutoko',
+    'Mvurwi',
+    'Nelson Mandela Ave',
+    'Norton',
+    'Nyanga',
+    'Nyika',
+    'Rusape',
+    'Rushinga',
+    // 'Sanyati',
+    // 'Treasury',
+    'Wedza',
+    'Westgate',
+    'Zvishavane',
+    // 'Salary Processing',
+    // 'MICROFINANCE HQ',
+    // 'MICROFINANCE BINDURA',
+    // 'MICROFINANCE BINGA',
+    // 'MICROFINANCE CHIBUWE',
+    // 'MICROFINANCE CHIREDZI',
+    // 'MICROFINANCE FILABUSI',
+    // 'MICROFINANCE GOKWE',
+    // 'MICROFINANCE GURUVE',
+    // 'MICROFINANCE GWANDA',
+    // 'MICROFINANCE KAROI',
+    // 'MICROFINANCE MAPHISA',
+    // 'MICROFINANCE MARONDERA',
+    // 'MICROFINANCE MUTARE',
+    // 'MICROFINANCE MUTOKO',
+    // 'MICROFINANCE NELSON',
+    // 'MICROFINANCE NORTON',
+    // 'MICROFINANCE KOPJE',
+    // 'MICROFINANCE SANYATI',
+    // 'MICROFINANCE WESTGATE',
+    // 'MICROFINANCE EIGHTH',
+    // 'MICROFINANCE ZVISHA',
+    // 'Land Bank HQ',
+    // 'Land Bank Chinhoyi',
+    // 'Land Bank Marondera',
+    // 'Land Bank Mutare',
+    // 'Land Bank Bindura',
+    // 'Land Bank Masvingo',
+    // 'Land Bank Gweru',
+    // 'Land Bank Jason Moyo',
+    // 'Land Bank Gwanda',
+    // 'Land Bank Harare'
   ];
 
   gender = [
@@ -1216,6 +1361,8 @@ export class AccountOpeningComponent implements OnInit, OnChanges, OnDestroy {
   ]
 
   countries = countries;
+  banks = banks
+  products = products
 
   checkInformation(
     jsonSection: keyof typeof this.createAccountForm,
@@ -1224,9 +1371,9 @@ export class AccountOpeningComponent implements OnInit, OnChanges, OnDestroy {
     const section = this.createAccountForm[jsonSection];
 
     let result = !Object.entries(section)
-  .filter(([key]) => !excludedPages.includes(key)) // Exclude specific keys
-  .map(([, value]) => value)
-  .some(value => value === '' || value === null); // Check for empty string or null
+      .filter(([key]) => !excludedPages.includes(key)) // Exclude specific keys
+      .map(([, value]) => value)
+      .some(value => value === '' || value === null); // Check for empty string or null
 
     return result;
   }
@@ -1236,10 +1383,95 @@ export class AccountOpeningComponent implements OnInit, OnChanges, OnDestroy {
       this.idFileList,
       this.profilePhotoFileList,
       this.signatureFileList,
-      this.proofOfResFileList
+      this.proofOfResFileList,
+      this.payslipFileList,
+      this.proofOfEmpFileList
     ];
 
     return fileLists.every(list => list.length > 0);
+  }
+
+  isValidSsbReference(ssb: string): boolean {
+    const ssbRegex = /^\d{7}[a-zA-Z]$/;
+    return ssbRegex.test(ssb);
+  }
+
+  isLoanStepValid(): boolean {
+    const loan = this.createAccountForm.loan;
+    const bank = this.createAccountForm.bank;
+
+    if (!loan.ssb_reference || !this.isValidSsbReference(loan.ssb_reference)) {
+      return false;
+    }
+
+    if (loan.amount == null || loan.amount < 1 || loan.amount > 3500) {
+      return false;
+    }
+
+    const requiredLoanFields = [
+      'product', 'type', 'loanPurpose', 'employerIndustry', 
+      'propertyDensity', 'propertyOwnership', 'maritalStatus', 
+      'occupationClass', 'salaryRange', 'employer'
+    ];
+
+    for (const field of requiredLoanFields) {
+      const val = (loan as any)[field];
+      if (val === '' || val === null || val === undefined) {
+        return false;
+      }
+      if (typeof val === 'object' && Object.keys(val).length === 0) {
+        return false;
+      }
+    }
+
+    if (!this.selectedBank || (typeof this.selectedBank === 'object' && Object.keys(this.selectedBank).length === 0)) {
+      return false;
+    }
+
+    if (!bank.account_number || bank.account_number === '') {
+      return false;
+    }
+
+    return true;
+  }
+
+  getLoanStepTooltip(): string {
+    const loan = this.createAccountForm.loan;
+    const bank = this.createAccountForm.bank;
+
+    if (loan.amount == null || loan.amount < 1 || loan.amount > 3500) {
+      return 'Loan amount should be between 1 and 3500';
+    }
+
+    if (!loan.ssb_reference || !this.isValidSsbReference(loan.ssb_reference)) {
+      return 'Employee Number must be 7 digits followed by 1 letter';
+    }
+
+    const requiredLoanFields = [
+      'product', 'type', 'loanPurpose', 'employerIndustry', 
+      'propertyDensity', 'propertyOwnership', 'maritalStatus', 
+      'occupationClass', 'salaryRange', 'employer'
+    ];
+
+    for (const field of requiredLoanFields) {
+      const val = (loan as any)[field];
+      if (val === '' || val === null || val === undefined) {
+        return 'Please enter all required loan information';
+      }
+      if (typeof val === 'object' && Object.keys(val).length === 0) {
+        return 'Please enter all required loan information';
+      }
+    }
+
+    if (!this.selectedBank || (typeof this.selectedBank === 'object' && Object.keys(this.selectedBank).length === 0)) {
+      return 'Please select a bank';
+    }
+
+    if (!bank.account_number || bank.account_number === '') {
+      return 'Please enter an account number';
+    }
+
+    return '';
   }
 
   openFasModal() {

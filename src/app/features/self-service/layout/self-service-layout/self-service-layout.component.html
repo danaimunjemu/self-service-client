@@ -38,15 +38,34 @@
             </li> -->
           </ul>
           <div class="d-flex nav-buttons-section">
-              <!-- <afc-button
+               <afc-button
               class="me-2"
                 [label]="'Apply for a Loan'"
                 [disableButton]="false"
                 [loading]="false"
-                (buttonClick)="navigateTo('loan-application')"
+                (buttonClick)="showLoansModal()"
                 [style]="'primary'"
                 [size]="'sm'"
-              /> -->
+              />
+<!--            <afc-button-->
+<!--              class="me-2"-->
+<!--                [label]="'Insurance Onboarding'"-->
+<!--                [disableButton]="false"-->
+<!--                [loading]="false"-->
+<!--                (buttonClick)="navigateTo('insurance-application')"-->
+<!--                [style]="'primary'"-->
+<!--                [size]="'sm'"-->
+<!--              />-->
+            <afc-button
+              class="me-2"
+              [label]="'New Pos Request'"
+              [disableButton]="false"
+              [loading]="false"
+              (buttonClick)="navigateTo('posman-merchant-onboarding')"
+              [style]="'primary'"
+              [size]="'sm'"
+            />
+
             <afc-button
               [label]="'Open New Account'"
               [disableButton]="false"
@@ -64,3 +83,22 @@
     </div>
   </div>
 </div>
+
+<nz-modal
+  [(nzVisible)]="isLoansVisible"
+  [nzTitle]="modalLoansTitle"
+  [nzContent]="modalLoansContent"
+  [nzFooter]="modalLoansFooter"
+  (nzOnCancel)="handleLoansCancel()"
+>
+  <ng-template #modalLoansTitle></ng-template>
+
+  <ng-template #modalLoansContent>
+  <p>Please select the correct option</p>
+    <button nz-button (click)="navigateTo('loan-application')" nzType="primary">I am an AFC Client</button>
+    <button nz-button (click)="navigateTo('loan-application-non-afc')" nzType="default">I don't have an AFC Account</button>
+  </ng-template>
+
+  <ng-template #modalLoansFooter>
+  </ng-template>
+</nz-modal>

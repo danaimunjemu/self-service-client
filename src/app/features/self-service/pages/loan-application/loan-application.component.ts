@@ -28,7 +28,7 @@ export class LoanApplicationComponent  implements OnInit, OnDestroy, OnChanges {
       private route: ActivatedRoute,
       private cdr: ChangeDetectorRef,
       private breakpointObserver: BreakpointObserver
-    ) { 
+    ) {
       this.breakpointObserver.observe([
         Breakpoints.XSmall, // Phones
         Breakpoints.Small,  // Small tablets
@@ -64,7 +64,7 @@ export class LoanApplicationComponent  implements OnInit, OnDestroy, OnChanges {
     proceedToGuarantorLogin(){
       this.showLoginModal();
     }
-  
+
     ngOnInit(): void {
 
       this.route.queryParams.subscribe((queryParams: any) => {
@@ -92,11 +92,11 @@ export class LoanApplicationComponent  implements OnInit, OnDestroy, OnChanges {
         if (queryParams['ticketId'] != null || queryParams['ticketId'] != undefined) {
           console.log("id: ", queryParams['ticketId'])
           console.log("We are looking for the ticket")
-          this.getTicket(queryParams['ticketId']);  
+          this.getTicket(queryParams['ticketId']);
         }
       });
 
-    
+
       this.subs.add = this.accountOpeningService.queryTicketResponse$.subscribe((res: any) => {
         this.onQueryTicketResponse(res);
            })
@@ -179,12 +179,22 @@ export class LoanApplicationComponent  implements OnInit, OnDestroy, OnChanges {
     onLoginComplete(event: any) {
       if (!this.isGuarantor) {
         console.log(event);
-        this.userAccounts = event.userAccounts;
-        this.loanApplicationForm.pidNumber = event.pidNumber;
-        this.loanApplicationForm.mobileNumber = event.mobileNumber;
-        this.loanApplicationForm.userId = event.userId;
-        console.log(this.loanApplicationForm);
-        this.current += 1;
+        if (event.error) {
+          this.errorMessage = event.data;
+          this.showErrorModal();
+        } else {
+          this.userAccounts = event.data.userAccounts;
+          this.loanApplicationForm.pidNumber = event.data.pidNumber;
+          this.loanApplicationForm.mobileNumber = event.data.mobileNumber;
+          this.loanApplicationForm.userId = event.data.userId;
+          this.loanApplicationForm.customerName = event.data.customerName;
+          this.loanApplicationForm.type = event.data.type;
+          if(event.data.civilServant) {
+            this.loanApplicationForm.ecNumber = event.data.ecNumber;
+          }
+          console.log(this.loanApplicationForm);
+          this.current += 1;
+        }
       } else {
         this.isGuarantorLoggedIn = true;
         this.guarantorConfirmationForm.idNumber = event.pidNumber;
@@ -192,7 +202,21 @@ export class LoanApplicationComponent  implements OnInit, OnDestroy, OnChanges {
       this.closeLoginModal();
     }
 
-    
+  isErrorVisible = false;
+     errorMessage?: string = "";
+
+  showErrorModal(): void {
+    this.isErrorVisible = true;
+  }
+
+  handleErrorCancel(): void {
+    this.routingService.navigateByUrl('/');
+    this.isErrorVisible = false;
+  }
+
+
+
+
 
     tcVisible = false;
 
@@ -311,19 +335,22 @@ this.gotTicketNumber = true;
         this.showLoginModal();
         return;
     }
-    if (this.current == 2) {
-      console.log("Current = 2")
+    if (this.current === 1) {
+      // TODO REMOVE COMMENT
+      // this.loanApplicationForm.branch = "1040"
       this.ateAuthService.accountEnquiry({"account": this.loanApplicationForm.accountNumber})
       this.uploadAttachments();
-      this.isSubmitVisible = true;
-    } else if (this.current == 3) {
+      this.current += 1; // ✅ increment
+      return;
+    }
+ else if (this.current == 3) {
       if (Number(this.queryTicket.record.additionalData.amount) > this.queryTicket.record.enquiryResult.maxQualifyingAmount_L) {
         this.notification.create('error', 'Error', 'The loan amount cannot be greater than the maximum quallifying amount')
-      }  
+      }
       else {
         this.current += 1;
       }
-    } 
+    }
     else {
       this.current += 1;
     }
@@ -335,7 +362,7 @@ this.gotTicketNumber = true;
     console.log(this.loanApplicationForm)
     this.submitLoanApplicationLoader = true;
     this.loanApplicationForm.nextRepaymentDate = this.formatDateToYMD(this.nextDate);
-    this.loanApplicationForm.guarantor = this.guarantorInformation;
+    // this.loanApplicationForm.guarantor = this.guarantorInformation;
     this.accountOpeningService.createNewRecord(this.loanApplicationForm, 'loans');
   }
 
@@ -346,7 +373,7 @@ this.gotTicketNumber = true;
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, '0'); // Month is 0-indexed
     const day = String(date.getDate()).padStart(2, '0');
-  
+
     return `${year}-${month}-${day}`;
   }
 
@@ -361,15 +388,15 @@ this.gotTicketNumber = true;
   }
 
   async uploadAttachments() {
-  
+
     try {
       const paySlipDocs = await this.processUpload(this.payslipFileList);
       const proofOfEmpDocs = await this.processUpload(this.proofOfEmpFileList);
 
       this.loanApplicationForm.payslip = paySlipDocs.length > 0 ? paySlipDocs[0].id : '';
       this.loanApplicationForm.proofOfEmployment = proofOfEmpDocs.length > 0 ? proofOfEmpDocs[0].id : '';
-  
-  
+
+
       console.log("-------------------");
       console.log(this.loanApplicationForm);
     } catch (error) {
@@ -379,18 +406,22 @@ this.gotTicketNumber = true;
 
   processUpload(fileList: any): Promise<any[]> {
     const uploadPromises: Promise<any>[] = [];
-  
+
     fileList.forEach((file: any) => {
       const formData: FormData = new FormData();
       formData.append("files", file);
-      formData.append("service", "SS-LOANS");
+      formData.append("owner", "SS-LOANS");
       formData.append("temporary", "false");
-  
+      formData.append("operation", "UPLOAD");
+      formData.append("path", "loan-application, " + this.loanApplicationForm.pidNumber);
+      formData.append("namePrefix", this.loanApplicationForm.pidNumber);
+
+
       const uploadPromise = new Promise<any>((resolve, reject) => {
         this.accountOpeningService.uploadFile(formData).subscribe({
           next: (response) => {
             console.log(`Upload successful`, response);
-  
+
             // Ensure response.data is properly extracted
             if (response && response.data) {
               resolve(response.data); // Resolve with data
@@ -405,10 +436,10 @@ this.gotTicketNumber = true;
           },
         });
       });
-  
+
       uploadPromises.push(uploadPromise);
     });
-  
+
     return Promise.all(uploadPromises).then((results) => {
       return results.flat(); // Flatten in case each upload returns multiple items
     });
@@ -447,6 +478,7 @@ this.gotTicketNumber = true;
     console.log(value)
     this.loanApplicationForm.accountNumber = value.number;
     this.loanApplicationForm.currency = value.currency;
+    this.loanApplicationForm.repaymentAccount = value.repaymentAccount;
     console.log(this.loanApplicationForm);
   }
 
@@ -457,6 +489,7 @@ this.gotTicketNumber = true;
   onSelectCurrency() {
     this.filteredAccounts = this.userAccounts.filter(account => account.currency === this.currencySelected);
     this.isCurrencySelected = true;
+    this.selectedAccount= "";
   }
 
   currencies = [
@@ -473,8 +506,6 @@ this.gotTicketNumber = true;
       "accountNumber",
       "salary",
       "employer",
-      "tenure",
-      "amount",
       "loanPurpose",
       "employerIndustry",
       "propertyDensity",
@@ -483,10 +514,10 @@ this.gotTicketNumber = true;
       "occupationClass",
       "salaryRange",
     ];
-  
+
     // Find missing fields
     const missingFields = requiredFields.filter((field) => !form[field]);
-  
+
     if (missingFields.length > 0) {
       console.log("Missing required fields:", missingFields);
     }
@@ -496,19 +527,19 @@ this.gotTicketNumber = true;
     if(nextDateMissing) {
       console.log("Next date is missing")
     }
-  
+
     // Check if file lists are not empty
     const payslipMissing = payslipFileList.length === 0;
     const proofOfEmpMissing = proofOfEmpFileList.length === 0;
-  
+
     if (payslipMissing) {
       console.log("Payslip files are missing");
     }
-  
+
     if (proofOfEmpMissing) {
       console.log("Proof of employment files are missing");
     }
-  
+
     return missingFields.length === 0 && !nextDateMissing && !payslipMissing && !proofOfEmpMissing;
   }
 
@@ -522,12 +553,8 @@ this.gotTicketNumber = true;
     salary: '',
     employer: '',
     nextRepaymentDate: '',
-    loanProduct: 'CONSUMER_LOAN',
-    tenure: '',
     mobileNumber: '',
-    amount: '',
-    payslip: '',
-    proofOfEmployment: '',
+
 // FCB checks
     loanPurpose: '',
     employerIndustry: '',
@@ -536,8 +563,22 @@ this.gotTicketNumber = true;
     maritalStatus: '',
     occupationClass: '',
     salaryRange: '',
-    //OTHER
-    guarantor: {}
+
+    // DOCUMENTS
+    payslip: '',
+    proofOfEmployment: '',
+
+    // NEW FIELDS
+    repaymentAccount: '',
+    ecNumber: '',
+    customerName: '',
+    type: '',
+
+
+    // DEPRECATED
+    // loanProduct: 'CONSUMER_LOAN',
+    // tenure: '',
+    // guarantor: {},
   }
 
   guarantorForm = {
@@ -598,33 +639,21 @@ this.gotTicketNumber = true;
 
   payslipFileList: any[] = [];
   proofOfEmpFileList: any[] = [];
-  
+
     checkPayslipUploadFile = (file: NzUploadFile): boolean => {
       this.payslipFileList = this.payslipFileList.concat(file);
       return false;
     }
-  
+
     checkEmploymentUploadFile = (file: NzUploadFile): boolean => {
       this.proofOfEmpFileList = this.proofOfEmpFileList.concat(file);
       return false;
     }
 
   otpArray: string[] = Array(6).fill('');
-  
+
   get otpValue(): string {
     return this.otpArray.join('');
-  }
-
-  handleInput(event: KeyboardEvent, index: number): void {
-    const inputElement = event.target as HTMLInputElement;
-    const value = inputElement.value;
-
-    if (event.key === 'Backspace' && index > 0) {
-      this.otpArray[index] = ''; 
-      (document.getElementsByClassName('otp__digit')[index - 1] as HTMLInputElement).focus();
-    } else if (value.length === 1 && index < 5) {
-      (document.getElementsByClassName('otp__digit')[index + 1] as HTMLInputElement).focus();
-    }
   }
 
   isValidOTP(): boolean {
@@ -740,25 +769,26 @@ this.gotTicketNumber = true;
   checkInformation(excludedFields: string[]): boolean {
     let result = !Object.entries(this.loanApplicationForm)
       .filter(([key]) => !excludedFields.includes(key)) // Exclude specified fields
-      .map(([key, value]) => 
+      .map(([key, value]) =>
         typeof value === 'object' && value !== null ? Object.keys(value).length === 0 : value // Handle objects like `guarantor`
       )
       .some(value => value === '' || value === null); // Check for empty string or null
-  
+
     return result && this.checkDocuments();
   }
-  
+
   checkDocuments(): boolean {
     const fileLists = [
       this.payslipFileList,
       this.proofOfEmpFileList,
     ];
-  
+
     return fileLists.every(list => list.length > 0);
   }
-  
+
 
   generatePDF() {
+    // @ts-ignore
     var data = document.getElementById('terms-and-conditions')!;
     html2canvas(data).then((canvas) => {
       var docName = 'AFC Commercial Bank Account Opening Terms and Conditions ' + new Date();
@@ -797,7 +827,7 @@ this.gotTicketNumber = true;
       pdf.save(docName + '.pdf');
     });
   }
-  
+
 
 
 

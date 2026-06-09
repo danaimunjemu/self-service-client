@@ -43,8 +43,11 @@ export class AfcLinkLoginComponent implements OnInit, OnDestroy {
   }
 
   onResendOTPResponse(res: any) {
-    if(res.id) {
-      this.notification.create('success', 'Success', 'OTP sent successfully');
+    this.resendOtpLoader = false;
+    this.loginStage = 1;
+    this.otpIsVisible = true;
+    if(res.success) {
+      this.notification.create('success', 'Success', 'OTP resent successfully');
     } else {
       this.notification.create('error', 'Error', 'Error processing request');
     }
@@ -56,20 +59,26 @@ export class AfcLinkLoginComponent implements OnInit, OnDestroy {
   loanApplicationInputs = {
     pidNumber: '',
     mobileNumber: '',
+    customerName: '',
     userId: '',
     userAccounts: [] as any[],
+    civilServant: false,
+    staff: false,
+    ecNumber: "",
+    type: "",
   }
 
   otpId?: any;
 
-  onGetAccessTokenResponse(res: any) {
+  onGetAccessTokenResponse(response: any) {
     console.log(this.loginStage)
     this.loginLoader = false;
-    console.log(res);
+    console.log(response);
+    let res = response.data
     switch (this.loginStage){
       case 0:
         console.log("This is stage 0")
-        if (res.otp) {
+        if (res.otpReference) {
           this.notification.create('success', 'Success', 'Please enter the OTP sent to your mobile number');
           this.loginForm.otpRef = res.otpReference;
           this.loanApplicationInputs.userId = res.userId;
@@ -82,13 +91,29 @@ export class AfcLinkLoginComponent implements OnInit, OnDestroy {
         break;
       case 1:
         if (res.accessToken) {
-          for (let account of res.accounts) {
-            this.loanApplicationInputs.userAccounts.push({'number': account.accountNumber, 'currency': account.currency})
+          let processedUser = this.processUser(res)
+          console.log("!!!! processed user", processedUser)
+          if (processedUser.error) {
+            this.loginComplete.emit({error: true, data: processedUser.message});
+          } else {
+            // for (let account of res.accounts) {
+            //   this.loanApplicationInputs.userAccounts.push({'number': account.accountNumber, 'currency': account.currency})
+            // }
+            this.loanApplicationInputs.userAccounts = processedUser.accounts ?? [];
+            this.loanApplicationInputs.pidNumber = res.user.nationalId
+            this.loanApplicationInputs.type = res.type
+            this.loanApplicationInputs.mobileNumber = res.user.msisdn
+            this.loanApplicationInputs.customerName = res.user.firstName + " " + res.user.lastName
+            this.loanApplicationInputs.civilServant = processedUser.civilServant ?? false
+            this.loanApplicationInputs.staff = processedUser.staff ?? false
+            this.loanApplicationInputs.ecNumber = processedUser.ecNumber
+            this.loginComplete.emit({error: false, data: this.loanApplicationInputs});
           }
-          this.loanApplicationInputs.pidNumber = res.user.nationalId
-          this.loanApplicationInputs.mobileNumber = res.user.msisdn
+
+
+
           this.loginStage=0;
-          this.loginComplete.emit(this.loanApplicationInputs);
+
           //TODO: emit event
         } else if(res.error) {
           // this.notification.create('error', res.error, res.error_description);
@@ -97,28 +122,86 @@ export class AfcLinkLoginComponent implements OnInit, OnDestroy {
         break;
       default:
         this.notification.create('error', res.error, res.error_description);
-          break; 
+          break;
     }
 
   }
 
+  processUser(res: any) {
+    let userAccounts = [] as any[];
+    console.log(res);
+    if (res.accounts == null) {
+      return {error: true, message: "Failed to process your request. Visit your nearest branch for assistance.", accounts: []}
+    }
+    if (res.staff && res.civilServant) {
+      return {error: true, message: "Failed to process your request. Visit your nearest branch for assistance.", accounts: []}
+    }
+    if (res.staff) {
+      return {error: true, message: "Staff members should use AFC link for applications", accounts: []}
+    } else if (res.civilServant) {
+      for (let account of res.caResults.accounts) {
+        if (account.repaymentAccount != "" ) {
+          userAccounts.push(
+            {
+              'number': account.account,
+              'currency': account.currency,
+              'repaymentAccount': account.repaymentAccount
+            }
+          )
+        }
+      }
+      return {error: false, accounts: userAccounts, civilServant: true, staff: false, ecNumber: res.caResults.ecNumber,};
+    } else if (!res.staff && !res.civilServant) {
+      for (let account of res.accounts) {
+        userAccounts.push(
+          {
+            'number': account.accountNumber,
+            'currency': account.currency,
+            'repaymentAccount': account.accountNumber
+          }
+          )
+      }
+      return {error: false, accounts: userAccounts, civilServant: false, staff: false, ecNumber: '', };
+    }
+    return {error: true, message: "Failed to process your request. Visit your nearest branch for assistance."}
+  }
+
+
   loginLoader: boolean = false;
 
+  normalizePhoneNumber(phone: string): string {
+    // Remove all non-digit characters (like +, spaces, hyphens)
+    const digits = phone.replace(/\D/g, '');
+
+    // Remove leading zeros or country code variants, then add "263"
+    if (digits.startsWith('263')) {
+      return digits;
+    } else if (digits.startsWith('0')) {
+      return '263' + digits.substring(1);
+    } else {
+      return '263' + digits;
+    }
+  }
+
+
   authenticate() {
+    this.loginForm.username = "263" + this.loginForm.username.slice(-9);
     this.loginLoader = true;
     let req = {
-      username: 'MOBILE:' + this.loginForm.username,
-      password: this.loginForm.password,
-      grant_type: this.loginForm.grant_type,
+      mobile: this.loginForm.username,
+      pin: this.loginForm.password,
       otp: this.loginForm.otp,
       otpRef: this.loginForm.otpRef
     }
+    console.log(req)
 
     this.ateAuthService.getAccessToken(req)
   }
 
+  resendOtpLoader: boolean = false;
+
   resendOTP() {
-    this.loginLoader = true;
+    this.resendOtpLoader = true;
     this.otpIsVisible = false;
     this.loginStage = 0;
     this.ateAuthService.resendOTP(this.otpId)
